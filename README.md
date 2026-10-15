@@ -1,8 +1,10 @@
 # productive. — Weekly Planner
 
-A smooth, week-by-week task tracker built with plain HTML, CSS and JavaScript. Each week starts as a fresh, empty page. You plan the tasks you want to finish that week, move them through **Create → In progress → Done**, and at Saturday midnight the week resets for a clean start.
+A smooth, week-by-week task planner built with plain HTML, CSS and JavaScript. Each week starts as a fresh, empty page. You plan what you want to finish that week, move tasks through **Create → In progress → Done**, and at Saturday midnight the week resets for a clean start.
 
-![Productive weekly planner — desktop](docs/screenshot-desktop.png)
+**No account. No setup. Just open it and plan.** Tasks save in your browser, reset every week, and nothing is ever sent to a server.
+
+![Productive weekly planner on desktop](docs/screenshot-desktop.png)
 
 ---
 
@@ -22,16 +24,17 @@ A smooth, week-by-week task tracker built with plain HTML, CSS and JavaScript. E
   - [Priority levels](#priority-levels)
   - [Filters and navigation](#filters-and-navigation)
   - [Keyboard shortcuts](#keyboard-shortcuts)
-- [Using it on your phone](#using-it-on-your-phone)
-- [Pages](#pages)
-- [Error handling](#error-handling)
-- [Contact form](#contact-form)
-- [Accessibility & color contrast](#accessibility--color-contrast)
-- [Security](#security)
-- [Why there's no sign-in](#why-theres-no-sign-in)
 - [Reminders](#reminders)
-- [Repeating tasks & the end-of-week flow](#repeating-tasks--the-end-of-week-flow)
+- [Repeating tasks](#repeating-tasks)
+- [The end-of-week flow](#the-end-of-week-flow)
 - [Your data, offline & sharing](#your-data-offline--sharing)
+- [Using it on your phone](#using-it-on-your-phone)
+- [Why there's no sign-in](#why-theres-no-sign-in)
+- [Pages](#pages)
+- [Contact form](#contact-form)
+- [Error handling](#error-handling)
+- [Security](#security)
+- [Accessibility & color contrast](#accessibility--color-contrast)
 - [Design](#design)
 - [Project structure](#project-structure)
 - [Technical details](#technical-details)
@@ -47,26 +50,27 @@ A smooth, week-by-week task tracker built with plain HTML, CSS and JavaScript. E
 |---|---|
 | 🗓️ **Weekly pages** | Each week (Sunday → Saturday) is its own page. You can see the current week and any week ahead, but never the past. |
 | 📋 **3 columns per day** | Every day has **Create**, **In progress** and **Done** columns. |
-| 🎨 **Color-coded categories** | Work (red), Gym (orange), Miscellaneous (blue), Appointment (purple), Personal (teal), Study (yellow). Fully customizable. |
+| 🎨 **Your own categories** | Starts with Work, Gym, Miscellaneous, Appointment, Personal and Study. Add your own with any name and color straight from the filter row (**+ New category**) or the task window. |
 | 🔢 **Priority 1–5** | 1 is most urgent. Cards sort automatically by priority, then by time. |
 | 📝 **Task details** | Optional time, location (opens in Google Maps) and notes on every task. |
 | ↪️ **Auto-shift** | Unfinished tasks whose time has passed move to the next day at the same time, until the end of the week. |
-| 💾 **Persistent** | Data survives page reloads and browser restarts, for the whole week. |
+| 🔔 **Reminders (optional)** | A *Remind me* switch on any task with a time: one notification 15 minutes before, plus a small in-app pop-up. Off by default. |
+| 🔁 **Repeat every week** | Turn on *Repeat every week* for routines (gym, meetings) and they come back every new week automatically. |
+| 🌅 **End-of-week flow** | On Saturday, a notice offers to move unfinished tasks to next week. On Sunday, a "week in review" card shows how last week went. |
+| 💾 **Persistent** | Data survives reloads and browser restarts for the whole week. |
 | 🔄 **Weekly reset** | At Saturday midnight the finished week is cleared and the new week starts empty. |
-| 🖱️ **Drag & drop** | Drag cards between columns and between days, with a mouse or by press-and-hold on touch screens. |
-| ❓ **How-to guide** | A full [how-to page](help.html) with a quick start, FAQ and troubleshooting. Reachable from the **How to** button in the top bar, the welcome banner, the footer, or the `?` key. |
-| 🛟 **Friendly error page** | Missing pages and unexpected app errors show a clear page that tells people their tasks are safe, with one-tap problem reporting. |
-| 🔔 **Reminders** | Optional *Remind me* switch on any task with a time: one notification 15 minutes before (plus a small in-app pop-up), while Productive is open. Off by default. |
-| 🔁 **Repeat every week** | Turn on *Repeat every week* for routines (gym, meetings) and they come back every new week automatically. Skip a week by deleting that copy. |
-| 🌅 **End-of-week flow** | On Saturday a notice offers to move unfinished tasks to next week. Each task can also be moved on its own. On Sunday a "week in review" card shows last week's score. |
-| 💾 **Your data** | Download a backup, restore it (for example on a new computer), or erase everything, all from the **Your data** link in the footer. |
-| 📴 **Works offline** | After the first visit, a service worker lets the bookmarked or home-screen app open without internet. It always fetches fresh files when online. |
+| 🖱️ **Drag & drop** | Drag cards between columns and days, with a mouse or by press-and-hold on touch screens. |
+| 🗂️ **Your data** | Download a backup, restore it on another device, or erase everything, from the **Your data** link in the footer. |
+| 📴 **Works offline** | After the first visit, the bookmarked or home-screen app opens without internet. |
+| 📱 **Mobile friendly** | Swipeable columns, bottom-sheet forms, a floating + button, big tap targets, and it installs to the home screen like an app. |
+| 🙌 **No account, no setup** | No sign-up or password. Bookmark it or keep it open in a tab. |
+| ❓ **How-to guide** | A full [how-to page](help.html) with a quick start, FAQ and troubleshooting, one click away from everywhere. |
+| ✉️ **Contact form** | A [contact page](contact.html) that opens the visitor's email app (or Gmail / Outlook / Yahoo Mail) with the message ready to send. |
+| 🛟 **Friendly error page** | Missing pages and unexpected errors show a clear page that says tasks are safe, with one-tap problem reporting. |
+| 🔒 **Privacy & Terms** | Plain-language [Privacy Policy](privacy.html) and [Terms of Use](terms.html). |
+| 🛡️ **Hardened** | Strict security policy, all saved data checked on load, limits against flooding, and anti-framing. |
 | 🖨️ **Print-friendly** | Printing gives a clean black-and-white copy of the week. |
-| 🙌 **No account, no setup** | No sign-up or password. Open it and plan. Tasks save in the browser and reset every week. Bookmark it or keep it open in a tab. |
-| ✉️ **Contact form** | A [contact page](contact.html) that opens the visitor's email app (or Gmail / Outlook / Yahoo Mail) with their message addressed and ready to send. No backend or third-party form service. |
-| 🔒 **Privacy & Terms** | Plain-language [Privacy Policy](privacy.html) and [Terms of Use](terms.html) pages. |
-| 📱 **Mobile friendly** | Built for phones too: swipeable columns, bottom-sheet forms, a floating + button, big tap targets, and it can be added to your home screen like an app. |
-| ⚡ **No setup** | No frameworks, no build step, no install. Just open `index.html`. |
+| ⚡ **No build step** | No frameworks, no dependencies, no install. |
 
 ---
 
@@ -77,17 +81,18 @@ A smooth, week-by-week task tracker built with plain HTML, CSS and JavaScript. E
 2. Open the folder in **Visual Studio Code**.
 3. Install the **Live Server** extension (Extensions panel → search "Live Server" by Ritwick Dey).
 4. Right-click `index.html` → **Open with Live Server**.
-5. The app opens in your browser and reloads automatically when you edit the code.
+5. After you save a change, **refresh the page yourself** (⌘/Ctrl + Shift + R). Live Server's auto-reload injects a script, which the app's security policy correctly blocks. Everything else works normally.
 
 ### Option 2 — Open the file directly
-Double-click `index.html` to open it in any modern browser.
+Double-click `index.html` to open it in any modern browser. (Offline support, notifications and home-screen install need a web address, so use Option 1 or 3 to try those.)
 
 ### Option 3 — Host it free on GitHub Pages (to use it on your phone)
 1. Push this folder to a GitHub repository.
 2. In the repository, go to **Settings → Pages**.
 3. Under **Build and deployment**, choose **Deploy from a branch**, pick `main` and `/ (root)`, and click **Save**.
-4. After a minute, your app is live at `https://<your-username>.github.io/<repo-name>/`.
-5. Open that link on your phone and add it to your home screen (see [Using it on your phone](#using-it-on-your-phone)).
+4. Tick **Enforce HTTPS** on the same page.
+5. After a minute, the app is live at `https://<your-username>.github.io/<repo-name>/` (this project assumes `https://ms801525.github.io/Productive/`).
+6. Open that link on your phone and add it to your home screen (see [Using it on your phone](#using-it-on-your-phone)).
 
 ### Option 4 — Any static server
 ```bash
@@ -104,31 +109,31 @@ npx serve .
 ## How it works
 
 ### The weekly cycle
-- A week runs from **Sunday 00:00** to **Saturday 23:59**.
-- When the app opens, it shows **this week**. Use the arrows at the top to look at **next week** and beyond (up to 52 weeks ahead). The "previous week" arrow is disabled on the current week, so past weeks can never be viewed.
-- At **Saturday midnight** (the moment Saturday turns into Sunday):
-  - The week that just ended is **permanently deleted**.
+- A week runs from **Sunday 00:00** to **Saturday 23:59**, in the device's own time zone.
+- The app opens on **this week**. Use the arrows at the top to look at **next week** and beyond (up to 52 weeks ahead). The "previous week" arrow is disabled on the current week, so past weeks can never be viewed.
+- At **Saturday midnight**:
+  - The week that just ended is **permanently deleted**. Only a numbers-only summary is kept for the [week in review](#the-end-of-week-flow).
   - The new week becomes "This week".
-  - If you already planned tasks for that new week, **they're kept**. Only past weeks are removed.
-- A countdown in the top bar ("Week resets in 2d 14h 59m") shows how long is left before the reset.
+  - Tasks you had already planned for that new week are **kept**.
+- A countdown in the top bar ("Week resets in 2d 14h 59m") shows how long is left.
 - The reset happens even if the tab stays open overnight (a timer fires at midnight), and also when you open the app after being away.
 
 ### Days and columns
-Each of the 7 days is shown as its own section with three columns:
+Each of the 7 days has three columns:
 
 | Column | Meaning |
 |---|---|
 | **Create** | Planned, not started yet |
 | **In progress** | Currently working on it |
-| **Done** | Finished (the title is shown crossed out) |
+| **Done** | Finished (the title is crossed out) |
 
 - **Today** is highlighted with a lime outline and a "Today" label.
-- **Days already past** in the current week are folded into a single "Earlier this week" bar so the board stays focused on what's left. Click it (or "Show earlier days") to expand them. You can't add new tasks to past days.
+- **Days already past** in the current week fold into one "Earlier this week" bar so the board stays focused on what's left. Click **Show** (or "Show earlier days") to expand them. New tasks can't be added to past days.
 - Each day header shows how many tasks it has and how many are done.
-- The **day strip** under the filters gives a quick overview of the week (open tasks per day and colored category dots). Click a day to jump to it.
+- The **day strip** gives a quick overview of the week (open tasks per day and colored category dots). Click a day to jump to it.
 
 ### Overdue tasks auto-shift
-If a task isn't finished by its time, it moves **to the next day at the same time**. This repeats every day until **Saturday**, the end of the week.
+If a task isn't finished by its time, it moves **to the next day at the same time**. This repeats every day until **Saturday**.
 
 **Rules**
 - Only tasks in **Create** or **In progress** shift. **Done** tasks never move.
@@ -136,9 +141,9 @@ If a task isn't finished by its time, it moves **to the next day at the same tim
 - A task **without a time** is overdue at the end of its day (midnight).
 - If several days have passed, the task skips ahead to the first day where its time is still in the future.
 - A shifted task shows a lime **"from Tue"** badge so you know where it started.
-- On **Saturday** there's no next day, so an unfinished task stays on Saturday and gets a red **Overdue** badge. At midnight it's cleared with the rest of the week.
-- If you manually drag or edit a task onto a day, the "from" badge resets.
-- A toast message tells you when tasks were moved (e.g. "4 unfinished tasks moved to the next day").
+- On **Saturday** there's no next day, so an unfinished task stays there with a red **Overdue** badge. At midnight it's cleared with the rest of the week, unless you move it to next week.
+- If you drag or edit a task onto a day yourself, the "from" badge resets.
+- A short message says when tasks were moved (e.g. "4 unfinished tasks moved to the next day").
 
 **Example**
 
@@ -152,54 +157,64 @@ If a task isn't finished by its time, it moves **to the next day at the same tim
 The app checks for overdue tasks when it loads, every 20 seconds while open, and whenever you switch back to the tab.
 
 ### Saving your data
-- Everything saves **automatically** to your browser's `localStorage`. There's no save button.
-- Reloading the page, closing the tab or restarting the browser keeps all your tasks for the week.
-- If the app is open in **multiple tabs**, they stay in sync.
-- Your filter and "show earlier days" choices are remembered too.
+- Everything saves **automatically** to the browser's `localStorage`. There's no save button.
+- Reloading, closing the tab or restarting the browser keeps all your tasks for the week.
+- If the app is open in **several tabs**, they stay in sync.
+- Filters, "show earlier days" and dismissed notices are remembered too.
+- If the browser blocks storage (some private windows) or it's full, one clear notice explains how to fix it, and the app keeps working in that tab.
 
 ---
 
 ## Using the app
 
 ### Creating a task
-Click **New task** (or press **N**), the **+ Add** button on any day, or **Add a task** inside an empty Create column.
+Click **New task** (or press **N**), the **+ Add** button on any day, **Add a task** inside an empty Create column, or the floating **+** on phones.
+
+![The task window](docs/screenshot-task.png)
 
 | Field | Required | Notes |
 |---|---|---|
 | **What needs doing?** | ✅ | The task title (up to 120 characters). |
 | **Day** | ✅ | Sun–Sat of the week you're viewing. Past days of the current week are locked. |
-| **Time** | Optional | Used for sorting and for the auto-shift rules. You can't pick a time that has already passed today. |
+| **Repeat every week** | Optional | Brings the task back every week on the same day. See [Repeating tasks](#repeating-tasks). |
+| **Time** | Optional | Used for sorting, auto-shift and reminders. You can't pick a time that has already passed today. |
 | **Status** | ✅ | Create, In progress or Done. Defaults to Create. |
-| **Category** | ✅ | Pick a color-coded category. |
+| **Remind me** | Optional | Off by default. Available once a time is set. See [Reminders](#reminders). |
+| **Category** | ✅ | Pick a category, or tap **+ New category** to make one on the spot (it's selected for this task). |
 | **Priority** | ✅ | 1 (Urgent) to 5 (Someday). Defaults to 3. |
 | **Location** | Optional | Great for appointments. On the card it becomes a link that opens Google Maps. |
 | **Notes** | Optional | Details, links, things to bring (up to 2,000 characters). The first two lines show on the card. |
 
 After you add a task, the board scrolls to that day and a confirmation appears.
 
+**Reading a card:** category tag and priority badge at the top, then the title and notes. Below are small tags for time, **Reminder** (bell), location, **Weekly** (repeating), **from Tue** (auto-shifted) or **Overdue**.
+
 ### Moving tasks
-- **Drag and drop** a card into another column, or into any column on another day.
-- **On a phone or tablet:** press and hold a card for about a third of a second until it lifts, then drag it. The page scrolls automatically when you drag near the top or bottom of the screen, and a day's columns slide sideways when you drag toward the left or right edge. A quick swipe still scrolls normally.
+- **Drag and drop** a card into another column, or onto another day.
+- **On a phone or tablet:** press and hold a card for about a third of a second until it lifts, then drag. The page scrolls when you drag near the top or bottom, and a day's columns slide sideways near the left or right edge. A quick swipe still scrolls normally.
 - Click the **arrow button** on a card (it appears on hover, and is always visible on touch screens) to move it forward:
   - Create → In progress (→)
   - In progress → Done (✓)
   - Done → back to Create (↺)
 - Or open the task and change its **Status** or **Day**.
+- **Move to next week** in the task window moves it to the same day next week.
 
 ### Editing and deleting
-- Click (or press **Enter** on) any card to open it for editing.
-- Click **Delete** in the edit window to remove it. An **Undo** button appears for 6 seconds in case it was a mistake.
+- Click (or press **Enter** on) any card to edit it.
+- **Delete** in the edit window removes it. An **Undo** button appears for 6 seconds.
 
 ### Categories and colors
-Create your own categories with any name and color: use the **+ New category** chip at the end of the category filter row (pinned as **+ New** on phones), or **+ New category** in the task window, which also selects it for that task. The **Categories** window also lets you create, rename, recolor and delete them.
+Make your own categories with any name and color:
+- the **+ New category** chip at the end of the filter row (pinned as **+ New** on phones),
+- **+ New category** in the task window, or
+- the **Categories** window in the top bar.
 
-Click **Categories** in the top bar to:
+The **Categories** window also lets you:
 - **Recolor** a category: click its color swatch.
 - **Rename** it: type in the name field.
-- **Add** a new one: choose a color, type a name and click **Add**.
-- **Delete** one: click the trash icon. Any tasks in that category move to *Miscellaneous* (or the first remaining category). At least one category must always exist.
+- **Delete** one: click the trash icon. Its tasks move to *Miscellaneous* (or the first remaining category). At least one category must always exist.
 
-Changes apply instantly to every card.
+Changes apply instantly to every card. Tag text color is worked out per color, so even very dark or very bright custom colors stay readable. Up to 30 categories.
 
 Default categories:
 
@@ -222,13 +237,13 @@ Default categories:
 | 4 | Low | Grey **P4** |
 | 5 | Someday | Grey **P5** |
 
-Inside each column, tasks are sorted by **priority first**, then by **time** (earliest first; tasks without a time go last), then by when they were created.
+Inside each column, tasks sort by **priority first**, then by **time** (earliest first; tasks without a time go last), then by when they were created.
 
 ### Filters and navigation
 - **Category filters:** click one or more category chips to show only those tasks. Click **All** to clear.
 - **Week arrows:** go forward to future weeks. The label shows "This week", "Next week" or "In 3 weeks".
-- **Today button:** appears when you're viewing a future week and jumps back to the current one.
-- **Progress bar and stats:** show how much of the week you've finished and how many tasks are To do, In progress and Done.
+- **Today button:** appears on a future week and jumps back to the current one.
+- **Progress bar and stats:** show how much of the week is finished, and how many tasks are To do, In progress and Done.
 
 ### Keyboard shortcuts
 
@@ -239,126 +254,145 @@ Inside each column, tasks are sorted by **priority first**, then by **time** (ea
 | `Shift` + `→` | Next week |
 | `Shift` + `←` | Previous week (back to the current week) |
 | `Enter` / `Space` | Open the focused card |
-| `Esc` | Close a dialog |
+| `Esc` | Close a window |
+
+---
+
+## Reminders
+
+Kept deliberately simple, and completely optional:
+- A **Remind me** switch in the task window. It's **off by default** and only available when the task has a time.
+- **15 minutes before** the task (`REMIND_MIN` in `app.js`), Productive shows a system notification and, if the app is on screen, a small **"Coming up"** pop-up in the corner. Tapping the notification brings Productive to the front.
+- The first time someone turns it on, the browser asks to allow notifications. If they say no, reminders still appear as the in-app pop-up.
+- Each reminder shows **once**. A reload or a second tab won't repeat it. Finished tasks never remind, and nothing pops up if the app is opened after the task's time.
+- Repeating tasks keep their reminder every week. Cards with a reminder show a small bell **Reminder** tag.
+- Reminders work **while Productive is open**: a tab, a pinned tab, or the home-screen app. With no server, there's nothing to send alerts when it's fully closed, which fits the "keep it open" approach.
+- On **iPhone and iPad**, web notifications only work after the app is added to the Home Screen. Otherwise the in-app pop-up is used.
+
+**How it works in code:** `checkReminders()` runs on every tick, and `scheduleNextReminder()` sets a timer for the next one so it fires on time. Before showing a reminder, the app saves `remindedFor` on the task (the reminder's timestamp), which is what prevents duplicates. Notifications go through the service worker (`reg.showNotification`) when available, otherwise `new Notification()`. The task title is always inserted as plain text.
+
+## Repeating tasks
+
+Turn on **Repeat every week** in the task window for routines like the gym or a weekly meeting.
+- Every week from the current one onward gets one copy on that day, with a **Weekly** tag.
+- **Edit** a copy with *Repeat every week* still on: the routine and its future copies are updated.
+- **Delete** a copy: only that week is skipped (Undo brings it back).
+- **Turn repeat off:** future copies are removed, and this week's task stays.
+- If you were away, copies whose time has already passed this week aren't created, so they don't pile up as overdue.
+- Up to 50 repeating tasks.
+
+In code, routines are templates stored in `state.routines`. `ensureRoutines()` fills each week as it's shown, and copies are linked by `routineId`. Deleting a copy adds that week to the routine's `skip` list.
+
+## The end-of-week flow
+
+- **Move to next week** (task window) moves one task to the same day next week. If it was auto-shifted, it goes back to its original day.
+- **Saturday notice:** on Saturday, a notice says how many unfinished tasks will be cleared at midnight, with one tap to move them all to next week. It can be dismissed for the week.
+- **Week in review:** on the new week, a one-time card shows how many tasks were done last week and the most-finished category. Only these numbers are kept (`state.lastWeek`), never task content.
+
+## Your data, offline & sharing
+
+- **Your data** (footer link, or `index.html#data`):
+  - **Download a backup** as a JSON file.
+  - **Restore** a backup, for example on a new computer. Max 2 MB, checked with the same strict `sanitize()` as saved data, and finished weeks are skipped.
+  - **Erase everything** with two taps.
+  - Shows how much storage is in use.
+- **Offline:** `sw.js` caches only the site's own files. It's *network-first*, so updates appear immediately when online and the saved copy is used offline. It never touches task data. Bump `CACHE` in `sw.js` if you add files.
+- **Home-screen shortcuts:** long-press the installed app icon for **New task** (`index.html?new=1`) or **How to use**.
+- **Link previews:** Open Graph and Twitter tags plus `icons/og-image.png` (1200×630) make shared links show a title, description and image. They point at `https://ms801525.github.io/Productive/`. Update them in each page's `<head>`, `robots.txt` and `sitemap.xml` if your address is different.
+- **Search engines:** `robots.txt` and `sitemap.xml`. `.nojekyll` tells GitHub Pages to publish files as-is.
+- **Print:** a print stylesheet gives a clean black-and-white copy of the week (buttons, notices and pop-ups are hidden).
 
 ---
 
 ## Using it on your phone
-The app adapts to small screens automatically:
+
+![Productive on a phone](docs/screenshot-mobile.png)
 
 | On phones | What changes |
 |---|---|
-| **Header** | Shrinks to one row: logo, week switcher, How to (?) and Categories. Week dates shorten to "Oct 11 – 17" when both ends are in the same month. |
-| **New task** | A floating lime **+** button in the bottom-right corner, within easy reach of your thumb. |
-| **Columns** | Each day's Create, In progress and Done columns become a sideways swipe carousel. The next column peeks in from the right so you know it's there. |
-| **Forms** | The task and Categories windows slide up from the bottom as a sheet. Text fields use 16px text so iPhones don't zoom in when you tap them. |
-| **Buttons** | Every button is at least 40–44px tall for easy tapping. The move-forward arrow on cards is always visible (no hover needed). |
-| **Filters** | Category chips scroll sideways in one row instead of wrapping. |
-| **Moving tasks** | Press and hold a card to drag it (see [Moving tasks](#moving-tasks)), or tap the arrow on the card. |
+| **Header** | One row: logo, week switcher, How to (?) and Categories. Week dates shorten to "Oct 11 – 17". |
+| **New task** | A floating lime **+** button in the bottom-right corner, in easy reach of your thumb. |
+| **Columns** | Each day's Create, In progress and Done columns become a sideways swipe carousel. The next column peeks in so you know it's there. |
+| **Forms** | Task, Categories and Your data windows slide up from the bottom. Text fields use 16px text so iPhones don't zoom in. |
+| **Buttons** | At least 40–44px tall. The move-forward arrow on cards is always visible. |
+| **Filters** | Category chips scroll sideways in one row, with **+ New** pinned at the end. |
+| **Moving tasks** | Press and hold a card to drag it, or tap the arrow on the card. |
+| **Reminders** | The "Coming up" pop-up spans the top of the screen. |
 | **Reset countdown** | Shown under the progress bar. |
 | **Notches** | Content stays clear of the notch, rounded corners and home indicator. |
 
 ### Add it to your home screen
-The app includes a web app manifest and icons, so it can be installed like a regular app (full screen, no browser bar):
-- **iPhone (Safari):** open the site → tap **Share** → **Add to Home Screen**.
+The app has a web app manifest and icons, so it installs like a regular app (full screen, no browser bar):
+- **iPhone (Safari):** open the site → tap **Share** → **Add to Home Screen**. This is also what enables reminder notifications on iPhone.
 - **Android (Chrome):** open the site → tap the **⋮** menu → **Add to Home screen** or **Install app**.
 
 This works when the app is served from a web address (such as GitHub Pages), not when opening the file directly.
 
-> Your tasks are stored per browser. Tasks on your phone and tasks on your laptop are separate lists.
-
-## Pages
-
-| Page | File | What it's for |
-|---|---|---|
-| **Planner** | `index.html` | The app itself. |
-| **How to use** | `help.html` | Step-by-step instructions: quick start, reading a task card, adding/moving/editing tasks, the weekly reset, overdue tasks, categories and priority, phone tips, shortcuts, FAQ and troubleshooting. Topic chips at the top jump straight to each section. |
-| **Privacy Policy** | `privacy.html` | Explains that tasks stay on the device, what's stored, the third-party services involved (GitHub Pages, Google Fonts, Google Maps, and email if they contact you), retention and how to delete data. |
-| **Terms of Use** | `terms.html` | Usage rules, the weekly deletion, no warranty, limitation of liability, and Nova Scotia governing law. |
-| **Contact** | `contact.html` | Contact form that emails alimustafa189@yahoo.com (see below). |
-| **Error page** | `404.html` | Shown for missing pages and for app errors (see below). |
-
-### Making the how-to page easy to find
-New users can't miss it:
-- **How to** button (a **?** icon on phones) in the top bar of the planner, always visible.
-- A **"New here?" welcome banner** with a *Read the how-to* button. It shows until the user dismisses it or adds their first task.
-- **Footer links** on every page: How to use · Privacy · Terms · Contact.
-- The **`?`** keyboard shortcut.
-- The error page and 404 page also link to it.
-
-All pages share the app's look (`styles.css` plus `pages.css`), work on phones, and have a sticky top bar with a **Back to planner** button.
-
-## Reminders
-
-Kept deliberately simple:
-- Optional **Remind me** switch in the task window. It's off by default and only available when the task has a time.
-- **15 minutes before** the task's time (`REMIND_MIN` in `app.js`), Productive shows a system notification (through the service worker when available) and a small in-app pop-up if the app is on screen. If notifications aren't allowed, only the in-app pop-up shows.
-- Each reminder fires **once** (`remindedFor` is saved first, so a second tab or a reload won't repeat it). Finished tasks never remind, and a reminder isn't shown if the app is opened after the task's time.
-- Tapping a notification brings Productive to the front (`notificationclick` in `sw.js`).
-- Works while Productive is open (tab, pinned tab, or home-screen app). There's no server, so there are no push notifications when it's closed. On iPhone/iPad, web notifications require the app to be added to the Home Screen.
-- Repeating tasks keep their reminder setting in every week.
-
-## Repeating tasks & the end-of-week flow
-
-**Repeating tasks** (`state.routines`) are templates: title, day, time, category, priority, location, notes.
-- Every week from the current one onward gets one copy on its day (`ensureRoutines()`). Each copy is linked by `routineId` and shows a **Weekly** badge.
-- **Edit** a copy with *Repeat every week* on: the template and untouched future copies are updated.
-- **Delete** a copy: that week is added to the template's `skip` list, so it won't come back that week (Undo restores it).
-- **Turn repeat off:** the template and untouched future copies are removed, and this week's task stays.
-- When filling the current week, copies whose time has already passed are skipped, so routines missed while away don't pile up as overdue.
-- Limit: 50 repeating tasks.
-
-**End of week:**
-- **Move to next week** (task window) moves a task to the same day next week, using its original day if it was auto-shifted. Repeating tasks don't need it.
-- **Saturday notice:** shows how many unfinished tasks will be cleared at midnight, with one tap to move them all to next week. It can be dismissed for the week.
-- **Week in review:** at rollover, a numbers-only summary (`state.lastWeek`: done, total, most-finished category) is kept and shown once on the new week.
-
-## Your data, offline & sharing
-
-- **Your data** (footer link, or open `index.html#data`): download a JSON backup, restore one (max 2 MB, checked with the same strict `sanitize()` as saved data, finished weeks skipped), or erase everything (two taps).
-- **Storage problems** (private windows, blocked or full storage) show one clear notice with a fix, instead of an error on every action. The app keeps working in that tab.
-- **Offline:** `sw.js` caches only the site's own files. It uses a *network-first* strategy, so updates appear immediately when online and the cached copy is used offline. It never touches task data. Bump `CACHE` in `sw.js` if you add files.
-- **Home-screen shortcuts:** long-press the installed app icon for **New task** (`index.html?new=1`) or **How to use**.
-- **Link previews:** Open Graph / Twitter tags plus `icons/og-image.png` (1200×630) make shared links show a title, description and image. They point at `https://ms801525.github.io/Productive/`, so update them if your address is different.
-- **Search engines:** `robots.txt` and `sitemap.xml`. `.nojekyll` tells GitHub Pages to publish files as-is.
-- **Print:** a print stylesheet gives a clean black-and-white copy of the week.
+> Tasks are stored per browser. Your phone and your laptop each keep their own planner. Use **Your data → Download a backup** and **Restore** to move tasks between them.
 
 ## Why there's no sign-in
 
 **Productive deliberately has no accounts.** It's built to be as simple as possible:
 
 - **No setup.** No sign-up, no password, no email. Open the page and start planning.
-- **Saves automatically.** Tasks are stored in the browser (`localStorage`), so they're still there after a reload or restart.
+- **Saves automatically.** Tasks are stored in the browser, so they're still there after a reload or restart.
 - **Resets every week.** Saturday at midnight the finished week clears, so there's never a backlog.
 - **Private by default.** Nothing is sent to a server, so there's no personal data to protect, leak or sell.
+- **Every user has their own planner.** Each visitor's tasks live only in their own browser. Nobody sees anyone else's page.
 
-The trade-off is that each browser and device keeps its own planner. The app tells users this, and encourages them to **bookmark it or keep it open**:
+The trade-off is that each browser and device keeps its own planner. The app says so, and encourages people to **bookmark it or keep it open**:
 
-- An in-app **"No account · No setup"** section near the bottom of the planner explains the idea and shows a bookmark tip that fits the visitor's device: <kbd>⌘</kbd>+<kbd>D</kbd> on Mac, <kbd>Ctrl</kbd>+<kbd>D</kbd> on Windows/Linux, *Add to Home Screen* on iPhone and Android, and a friendly note if it's already installed.
-- The how-to page has **No account needed** and **Bookmark it or keep it open** sections, with steps for every device, including pinning the tab.
+- A **"No account · No setup — Just open it and plan."** section near the bottom of the planner explains the idea, with a bookmark tip that fits the device: <kbd>⌘</kbd>+<kbd>D</kbd> on Mac, <kbd>Ctrl</kbd>+<kbd>D</kbd> on Windows/Linux, *Add to Home Screen* on iPhone and Android, and a friendly note if it's already installed.
+- The how-to page has **No account needed** and **Bookmark it or keep it open** sections, including how to pin the tab.
 - The first-visit welcome banner says "No sign-up needed".
+
+## Pages
+
+| Page | File | What it's for |
+|---|---|---|
+| **Planner** | `index.html` | The app itself. |
+| **How to use** | `help.html` | 18 short sections: quick start, reading a card, adding, moving, editing, reminders, repeating tasks, the weekly reset, overdue tasks, categories and priority, weeks and filters, phone tips, no account, bookmarking, your data / offline / print, shortcuts, FAQ and troubleshooting. Topic chips at the top jump to each section. |
+| **Privacy Policy** | `privacy.html` | Explains that tasks stay on the device, exactly what's stored, reminders and the offline cache, the third-party services involved (GitHub Pages, Google Fonts, Google Maps, and email if someone makes contact), retention, export and erase, security, and Canadian privacy law (PIPEDA). |
+| **Terms of Use** | `terms.html` | Usage rules, the weekly deletion, reminders and repeating tasks as conveniences (not guarantees), feedback, ownership, no warranty, limitation of liability, and Nova Scotia governing law. |
+| **Contact** | `contact.html` | Contact form that emails alimustafa189@yahoo.com (see below). |
+| **Error page** | `404.html` | Shown for missing pages and for app errors (see below). |
+
+**The how-to page is easy to find:**
+- **How to** button (a **?** on phones) in the planner's top bar, always visible.
+- A **"New here?" welcome banner** with a *Read the how-to* button, shown until it's dismissed or the first task is added.
+- **Footer links** on every page: How to use · Privacy · Terms · Contact (plus **Your data** on the planner).
+- The **`?`** keyboard shortcut, and links from the error and 404 pages.
+
+All pages share the app's look (`styles.css` plus `pages.css`), work on phones, and have a sticky top bar with a **Back to planner** button.
 
 ## Contact form
 
 `contact.html` lets visitors reach the owner at **alimustafa189@yahoo.com** with a question, idea or problem.
 
-- The form has a topic (Question, Idea, Problem, Other), an optional name and reply email, and a message of up to 1,500 characters.
+- Fields: a topic (Question, Idea, Problem, Other), an optional name and reply email, and a message of up to 1,500 characters.
 - **Send message** opens the visitor's email app with the subject (`[Productive] Idea: …`) and body filled in. They press Send.
-- If no email app opens, one-click buttons open the same message in **Gmail**, **Outlook** or **Yahoo Mail** on the web, plus a **Copy message** button.
+- If no email app opens, one-click buttons open the same message in **Gmail**, **Outlook** or **Yahoo Mail** on the web, plus **Copy message**.
 - For **Problem** reports, technical details (browser, screen, and the last app error) can be included with a checkbox. Never task content.
-- The error page's **Report this problem** button and the 404 page's **Report a broken link** both open the contact form pre-filled.
+- The error page's **Report this problem** and the 404 page's **Report a broken link** open the form pre-filled.
 - Nothing is stored or sent by the website itself, and no third-party form service is used.
-- The address is assembled by JavaScript rather than written in the HTML, to reduce spam from address-harvesting bots.
+- The address is assembled by JavaScript instead of being written in the HTML, to cut down on spam from address-harvesting bots.
 
-To change the address, edit the `EMAIL` line in `contact.html` (and in the small scripts at the bottom of `privacy.html` and `terms.html`).
+**To change the address**, edit the `PRODUCTIVE_EMAIL` line in `pages.js`. Every page (including the contact form) reads it from there.
 
-## Accessibility & color contrast
+## Error handling
 
-All text meets **WCAG 2.1 AA** contrast (at least 4.5:1, or 3:1 for large text), checked with an automated audit of every page and window.
-- `--muted` `#a4a9b8` and `--faint` `#8b90a0` pass on every background shade the app uses.
-- Past days are shown with dashed outlines instead of being faded, so their text stays readable.
-- Category tag text is calculated per color (`catTextColor()` in `app.js`), so even dark custom colors stay readable.
-- Form field outlines (`--field-line`) have at least 3:1 contrast so fields are easy to see.
+`404.html` has two modes:
+
+| Mode | When | What the user sees |
+|---|---|---|
+| **Page not found** | Any address that doesn't exist (GitHub Pages serves `404.html` automatically) | "This page took the week off." Their tasks are safe, with buttons back to the planner and the how-to page. *Report a broken link* opens the contact form with the bad address filled in. |
+| **App error** | `404.html?type=error`, where the app sends people if something breaks | "Something went wrong. I'm on it." Their tasks are safe, with **Try again**, **Report this problem** (contact form with the error details ready, never task content), **Download backup**, and a two-tap **Reset app** if it keeps failing. A *Technical details* section shows the error. |
+
+How it works:
+- A safety net at the top of `app.js` catches uncaught errors and failed promises from the app's own code, keeps the last 10 error details on the device (`productive.errors.v1`), and redirects to the error page. Errors from browser extensions and harmless cancelled animations are ignored.
+- **Damaged data can't crash the app.** On load, `sanitize()` repairs or drops anything malformed before rendering.
+- **Storage problems** (blocked or full) show a notice instead of an error page.
+- `404.html` is fully self-contained (inline styles, links worked out at runtime), so it looks right even from a deep broken address like `/Productive/a/b/c`.
 
 ## Security
 
@@ -367,59 +401,49 @@ Productive is a **static website**: no server, no database, no accounts, no shar
 
 | Concern | Why it isn't a risk here |
 |---|---|
-| Someone seeing other users' tasks | No user data exists anywhere except each person's own browser, and browsers never share it between websites or people. |
+| Someone seeing other users' tasks | User data only exists in each person's own browser, and browsers never share it between websites or people. |
 | Bots or fake users | There's nothing for a bot to do: no sign-up, no posting, no shared database, and the contact form can't send email by itself (a person has to press Send in their own email app). A CAPTCHA would only slow down real people. |
 | Overloading / denial of service | Pages are static files served by GitHub Pages' global CDN, which absorbs heavy traffic. There's no backend to overload. |
-| Stealing secrets | The repository contains no passwords, API keys or private data. The only personal detail is the public contact email, which is assembled by script to hide it from simple spam bots. |
+| Stealing secrets | The repository contains no passwords, API keys or private data. The only personal detail is the public contact email, assembled by script to hide it from simple spam bots. |
 
 ### Protections built in
-- **Content Security Policy** on every page: the browser only runs scripts from this site's own files, so injected or third-party code is blocked. It also forbids connections to any outside server (`connect-src 'none'`), so the app can't leak data even if something went wrong. Other restrictions include no plugins, no frames, no `<base>` changes and no form submissions to other sites. Only Google Fonts is allowed from outside.
-- **No inline scripts.** Page scripts live in `app.js`, `pages.js` and `contact.js`. The one exception, `404.html`, is allowed by its SHA-256 hash (it must stay self-contained so it works from any broken address).
-- **All user text is escaped** before it's shown (task titles, notes, locations, category names), so typing HTML or code just shows it as text.
-- **Saved data is strictly checked on load** (`sanitize()` in `app.js`): it's rebuilt from known fields only, IDs must match `[A-Za-z0-9_-]`, colors must be `#rrggbb`, times must be valid, lengths are clipped, duplicates and junk are dropped, and the cleaned data is saved back immediately. Tampering with browser storage can't inject code or crash the app.
-- **Limits** stop anyone flooding the app: 300 tasks per week, 30 categories, 60 weeks of saved data, title 120 / location 160 / notes 2,000 / category name 30 characters, enforced in code as well as in the form fields.
+- **Content Security Policy** on every page: the browser only runs scripts from this site's own files, so injected or third-party code is blocked. It also forbids connections to any outside server (`connect-src 'none'`), so the app can't leak data even if something went wrong. No plugins, no frames, no `<base>` changes, no form submissions elsewhere. Only Google Fonts is allowed from outside.
+- **No inline scripts.** Page scripts live in `app.js`, `pages.js` and `contact.js`. The one exception, `404.html`, is allowed by its SHA-256 hash (it has to stay self-contained).
+- **All user text is escaped** before it's shown (titles, notes, locations, category names, reminder pop-ups), so typing HTML or code just shows it as text.
+- **Saved data is strictly checked on load** (`sanitize()` in `app.js`): rebuilt from known fields only, IDs must match `[A-Za-z0-9_-]`, colors must be `#rrggbb`, times and dates must be valid, `remind` must be exactly `true`, lengths are clipped, duplicates and junk are dropped, and the cleaned data is saved back immediately. Restored backups go through the same check. Tampering with browser storage can't inject code or crash the app.
+- **Limits** stop anyone flooding the app: 300 tasks per week, 30 categories, 50 repeating tasks, 60 weeks of saved data, 2 MB backups, and title 120 / location 160 / notes 2,000 / category name 30 characters, enforced in code as well as in the form.
 - **Anti-framing (clickjacking):** if another website loads Productive inside a frame, the page clears itself and shows only an "Open Productive in its own tab" link.
 - **No referrer leaks:** `referrer` is `no-referrer`, so sites like Google Maps or Gmail don't learn which page you came from.
-- **Safe links:** every link that opens a new tab uses `rel="noopener"`. Location links can only ever be a Google Maps search (`javascript:` tricks are impossible).
-- **Error page** shows error details as plain text, and the contact form treats link parameters as plain text.
+- **Safe links:** links that open a new tab use `rel="noopener"`. Location links can only ever be a Google Maps search, so `javascript:` tricks are impossible.
+- **Error page and contact form** treat error details and link parameters as plain text.
 
 ### Tested
-An automated attack suite (31 checks) tries script injection through every input, tampered and oversized storage (`__proto__` keys, bad IDs, bad colors, garbage rows), crafted URLs, framing by another site, flooding a week, and loading scripts or sending data to an outside server. All are blocked, and the policy blocks nothing the app needs.
+An automated attack suite (31 checks) tries script injection through every input, tampered and oversized storage (`__proto__` keys, bad IDs, bad colors, garbage rows), crafted URLs, framing by another site, flooding a week, and loading scripts or sending data to an outside server. All are blocked, and the policy blocks nothing the app needs. The reminder tests also confirm that a task title containing HTML shows as plain text in the notification and pop-up, and that tampered reminder values are removed.
 
 ### Keeping it secure (owner checklist)
 1. **Turn on two-factor authentication on your GitHub account.** Whoever controls the repo controls the website, so this matters most.
-2. In the repo go to **Settings → Pages** and tick **Enforce HTTPS**.
+2. In the repo, go to **Settings → Pages** and tick **Enforce HTTPS**.
 3. Never commit passwords or API keys. Nothing in this app needs any.
 4. If you edit the `<script>` at the bottom of `404.html`, update its hash in that file's `Content-Security-Policy` line. The browser console shows the exact value it expects, or run:
    ```bash
    python3 -c "import re,hashlib,base64;s=open('404.html').read();print(base64.b64encode(hashlib.sha256(re.search(r'<script>(.*?)</script>',s,re.S).group(1).encode()).digest()).decode())"
    ```
-5. **Developing with Live Server:** its auto-refresh works by injecting a script, which the security policy (correctly) blocks. Pages still load fine. Just press refresh (⌘/Ctrl + Shift + R) after saving a change.
+5. **Developing with Live Server:** refresh by hand after each save (see [Getting started](#getting-started)).
 
-## Error handling
+## Accessibility & color contrast
 
-`404.html` has two modes:
-
-| Mode | When | What the user sees |
-|---|---|---|
-| **Page not found** | Any address that doesn't exist (GitHub Pages serves `404.html` automatically) | "This page took the week off." Their tasks are safe, plus buttons back to the planner and the how-to page. *Report a broken link* opens the contact form with the bad address filled in. |
-| **App error** | `404.html?type=error`: the app sends people here if anything breaks | "Something went wrong. I'm on it." Their tasks are safe, with buttons to **Try again**, **Report this problem** (opens the contact form with the error details ready, never task content), **Download backup** of tasks as JSON, and a two-tap **Reset app** if it keeps failing. A *Technical details* section shows the error. |
-
-How it works in `app.js`:
-- A safety net at the top of the file listens for uncaught errors and failed promises from the app's own code. It saves the last 10 error details on the device (`productive.errors.v1`) and redirects to the error page. Errors from browser extensions and harmless cancelled animations are ignored.
-- **Damaged data can't crash the app.** On load, `sanitize()` checks every saved task and category, and repairs or drops anything malformed before rendering.
-- `404.html` is fully self-contained (inline styles, links calculated at runtime), so it still looks right when GitHub Pages serves it from a deep broken address like `/Productive/a/b/c`.
-
-Reports go through the [contact form](#contact-form) to your email. No GitHub account is needed.
+All text meets **WCAG 2.1 AA** contrast (at least 4.5:1, or 3:1 for large text), checked with an automated audit of every page and window.
+- `--muted` `#a4a9b8` and `--faint` `#8b90a0` pass on every background the app uses.
+- Past days use dashed outlines instead of being faded, so their text stays readable.
+- Category tag text is calculated per color (`catTextColor()` in `app.js`), so even dark custom colors stay readable.
+- Form field outlines (`--field-line` `#6a7081`) have at least 3:1 contrast.
+- Keyboard-navigable cards and windows, visible focus rings, ARIA labels, and the system "reduce motion" setting turns animations off.
 
 ## Design
 - **Two-color scheme:** deep ink (`#0C0D11`) and electric lime (`#D6FF3D`). Category colors appear only as small tags and card accents.
-- **Typography:** [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) for headings and [Inter](https://fonts.google.com/specimen/Inter) for body text, with system fonts as a fallback when offline.
-- **Smoothness:** cards glide to their new spot when moved (View Transitions API), pop in when created, and lift on hover. Dialogs slide in with a soft spring, and a blurred, sticky top bar keeps controls in reach.
-- **Accessibility:** keyboard-navigable cards and dialogs, visible focus rings, ARIA labels, and support for the system "reduce motion" setting (animations are turned off).
-- **Responsive:** tested on desktop (1440px), iPhone (390px) and small Android (360px) screen sizes, with no sideways page scrolling at any size.
-
-![Productive on mobile](docs/screenshot-mobile.png)
+- **Typography:** [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) for headings and [Inter](https://fonts.google.com/specimen/Inter) for body text, with system fonts as a fallback offline.
+- **Smoothness:** cards glide to their new spot when moved (View Transitions API), pop in when created and lift on hover. Windows slide in with a soft spring, and a blurred, sticky top bar keeps controls in reach.
+- **Responsive:** tested at desktop (1366–1440px), iPhone (390px) and small Android (360px) sizes, with no sideways page scrolling at any size.
 
 ---
 
@@ -427,28 +451,33 @@ Reports go through the [contact form](#contact-form) to your email. No GitHub ac
 
 ```
 Productive/
-├── index.html      # The planner: page layout, task dialog and categories dialog
-├── help.html       # How-to guide
-├── privacy.html    # Privacy Policy
-├── terms.html      # Terms of Use
-├── contact.html    # Contact form (opens the visitor's email app)
-├── 404.html        # Page-not-found + app error page (self-contained)
-├── styles.css      # Theme, layout, animations and responsive rules
-├── pages.css       # Extra styles for the how-to, privacy and terms pages
-├── pages.js        # Shared script for the how-to, privacy, terms and contact pages
-├── contact.js      # Contact form logic
-├── sw.js           # Offline support (service worker, network-first)
-├── robots.txt, sitemap.xml, .nojekyll   # Search engines + GitHub Pages
-├── app.js          # All app logic (weeks, storage, auto-shift, drag & drop, touch drag)
-├── manifest.webmanifest   # Lets the app be installed to a phone's home screen
+├── index.html            # The planner: layout, task / categories / your-data windows
+├── app.js                # All app logic (weeks, storage, auto-shift, drag & drop,
+│                         #   reminders, repeating tasks, notices, security checks)
+├── styles.css            # Theme, layout, animations, responsive and print rules
+├── help.html             # How-to guide
+├── privacy.html          # Privacy Policy
+├── terms.html            # Terms of Use
+├── contact.html          # Contact form (opens the visitor's email app)
+├── contact.js            # Contact form logic
+├── 404.html              # Page-not-found + app error page (self-contained)
+├── pages.css             # Extra styles for the how-to, privacy, terms and contact pages
+├── pages.js              # Shared script for those pages (contact email, anti-framing)
+├── sw.js                 # Offline support + notification taps (service worker)
+├── manifest.webmanifest  # Home-screen install, app shortcuts
+├── robots.txt            # Search engines
+├── sitemap.xml           # Search engines
+├── .nojekyll             # Tells GitHub Pages to publish files as-is
 ├── icons/
-│   ├── icon.svg            # Browser tab icon
-│   ├── icon-192.png        # Android home-screen icon
-│   ├── icon-512.png        # Android splash / large icon
-│   └── apple-touch-icon.png  # iPhone home-screen icon
+│   ├── icon.svg              # Browser tab icon
+│   ├── icon-192.png          # Android home-screen icon
+│   ├── icon-512.png          # Android splash / large icon
+│   ├── apple-touch-icon.png  # iPhone home-screen icon
+│   └── og-image.png          # Link preview image (1200×630)
 ├── docs/
 │   ├── screenshot-desktop.png
-│   └── screenshot-mobile.png
+│   ├── screenshot-mobile.png
+│   └── screenshot-task.png
 └── README.md
 ```
 
@@ -458,26 +487,24 @@ Productive/
 
 **Stack:** vanilla HTML5, CSS3 and JavaScript (ES2020). No dependencies, no build tools.
 
-**Drag & drop:** devices with a mouse or trackpad use the browser's built-in HTML5 drag and drop. Touch devices use a custom press-and-hold drag built on touch events, because mobile browsers don't support HTML5 drag and drop reliably.
+**Drag & drop:** mouse and trackpad use the browser's built-in HTML5 drag and drop. Touch devices use a custom press-and-hold drag built on touch events, because mobile browsers don't support HTML5 drag and drop reliably.
 
 **Storage keys** (`localStorage`):
 
 | Key | Contents |
 |---|---|
-| `productive.v1` | Categories, the active week and all tasks, grouped by week |
-| `productive.ui.v1` | UI preferences (active filters, show/hide earlier days, welcome banner dismissed) |
+| `productive.v1` | Categories, the active week, tasks grouped by week, repeating tasks (`routines`) and last week's summary (`lastWeek`) |
+| `productive.ui.v1` | UI preferences: active filters, show earlier days, welcome dismissed, week review seen, Saturday notice dismissed |
 | `productive.errors.v1` | The last 10 app errors, used only by the error page's report button |
-
-The main data (`productive.v1`) also holds `routines` (repeating tasks) and `lastWeek` (numbers-only summary).
 
 **Data shape**
 ```json
 {
   "version": 1,
-  "activeWeek": "2026-09-27",
+  "activeWeek": "2026-10-11",
   "categories": [{ "id": "work", "name": "Work", "color": "#FF4D4F" }],
   "weeks": {
-    "2026-09-27": [
+    "2026-10-11": [
       {
         "id": "tmg4k2x9ab12",
         "title": "Dentist appointment",
@@ -489,25 +516,39 @@ The main data (`productive.v1`) also holds `routines` (repeating tasks) and `las
         "location": "123 Spring Garden Rd, Halifax",
         "notes": "Bring insurance card.",
         "createdAt": 1790000000000,
-        "originalDay": 1
+        "originalDay": 1,
+        "remind": true,
+        "remindedFor": 1791997200000,
+        "routineId": "r8k2m1"
       }
     ]
-  }
+  },
+  "routines": [
+    {
+      "id": "r8k2m1", "title": "Leg day", "day": 4, "time": "18:00",
+      "cat": "gym", "priority": 2, "location": "", "notes": "",
+      "since": "2026-10-11", "skip": [], "remind": true
+    }
+  ],
+  "lastWeek": { "week": "2026-10-04", "total": 10, "done": 7, "top": "Work" }
 }
 ```
 - Weeks are keyed by the date of their **Sunday** (`YYYY-MM-DD`, local time).
-- `day` is `0` (Sunday) to `6` (Saturday).
-- `status` is `create`, `progress` or `done`.
-- `originalDay` exists only on tasks that were auto-shifted.
+- `day` is `0` (Sunday) to `6` (Saturday). `status` is `create`, `progress` or `done`.
+- Optional fields appear only when used: `originalDay` (auto-shifted), `remind` and `remindedFor` (reminders), `routineId` (copy of a repeating task).
 
 **Main pieces of `app.js`**
-- The error safety net (top of the file) and `sanitize()` keep problems from leaving users stuck.
-- `checkRollover()` deletes every week older than the current one when a new week starts.
+- **Safety net and anti-framing** at the top of the file.
+- `sanitize()` checks and repairs all saved or restored data.
+- `checkRollover()` deletes past weeks at the new week and records the `lastWeek` summary.
+- `ensureRoutines()` adds repeating-task copies to each week.
 - `shiftOverdue()` applies the auto-shift rules to the current week.
-- `render()` rebuilds the header, summary, filters, day strip and board from state.
+- `render()` rebuilds the header, notices, filters, day strip and board from state.
 - `update()` changes the data, saves it and re-renders with a smooth view transition.
-- The touch-drag section handles press-and-hold dragging on phones and tablets, with auto-scrolling.
-- `tick()` runs every 20 seconds, on tab focus, and exactly at Saturday midnight to handle resets, shifts and the countdown.
+- `moveToNextWeek()` handles the task-window button and the Saturday notice.
+- `checkReminders()` / `scheduleNextReminder()` / `showReminder()` handle reminders.
+- The touch-drag section handles press-and-hold dragging on phones and tablets.
+- `tick()` runs every 20 seconds, on tab focus, and exactly at Saturday midnight to handle resets, shifts, reminders and the countdown.
 
 All dates use the device's local time zone.
 
@@ -515,8 +556,9 @@ All dates use the device's local time zone.
 
 ## Browser support
 Works in current versions of **Chrome, Edge, Firefox and Safari** (desktop and mobile).
-- The animated card moves use the View Transitions API. Browsers without it still work, just without that animation.
-- Mobile: iOS Safari 15+ and Chrome for Android. Touch drag, bottom sheets and home-screen install are all supported.
+- Animated card moves use the View Transitions API. Browsers without it still work, just without that animation.
+- Notifications work in desktop browsers and on Android. On iPhone/iPad (iOS 16.4+), they need the app on the Home Screen. Everywhere else, the in-app pop-up is used.
+- Mobile: iOS Safari 15+ and Chrome for Android. Touch drag, bottom sheets and home-screen install are supported.
 
 ---
 
