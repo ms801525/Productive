@@ -12,6 +12,58 @@
 (() => {
   'use strict';
 
+  // ---------- Anti-framing ----------
+  // Stop other websites from loading the planner inside a frame (clickjacking).
+  if (window.top !== window.self) {
+    // Shown inside another website's frame: remove everything and offer only a link
+    // that opens the real page in its own tab, so nothing can be click-jacked.
+    document.body.innerHTML = '';
+    const a = document.createElement('a');
+    a.href = window.location.href;
+    a.target = '_top';
+    a.rel = 'noopener';
+    a.textContent = 'Open Productive in its own tab';
+    a.setAttribute('style', 'display:block;margin:40px auto;max-width:320px;padding:14px 20px;border-radius:999px;background:#d6ff3d;color:#0c0d11;font:600 16px system-ui,sans-serif;text-align:center;text-decoration:none');
+    document.body.appendChild(a);
+    return;
+  }
+
+  // ---------- Error safety net ----------
+  // If anything in the app breaks, the error is saved on this device (last 10)
+  // and the user is taken to the friendly error page (404.html?type=error),
+  // where they can report it, back up their tasks, or reload.
+  const ERROR_LOG_KEY = 'productive.errors.v1';
+  let fatalShown = false;
+  function reportFatal(err, source) {
+    if (fatalShown) return;
+    fatalShown = true;
+    try {
+      const log = JSON.parse(localStorage.getItem(ERROR_LOG_KEY) || '[]');
+      log.unshift({
+        at: new Date().toISOString(),
+        source,
+        message: String((err && err.message) || err || 'Unknown error').slice(0, 300),
+        stack: String((err && err.stack) || '').slice(0, 1200),
+        page: location.pathname,
+        browser: navigator.userAgent,
+      });
+      localStorage.setItem(ERROR_LOG_KEY, JSON.stringify(log.slice(0, 10)));
+    } catch (_) { /* storage unavailable — still show the page */ }
+    try { console.error('[Productive] fatal error:', err); } catch (_) {}
+    location.replace('404.html?type=error');
+  }
+  window.addEventListener('error', (e) => {
+    // Ignore failed images/fonts and errors from browser extensions or other scripts.
+    if (!e.error && !e.message) return;
+    if (e.filename && !/app\.js/.test(e.filename)) return;
+    reportFatal(e.error || e.message, 'error');
+  });
+  window.addEventListener('unhandledrejection', (e) => {
+    const r = e.reason;
+    if (r && (r.name === 'AbortError' || r.name === 'InvalidStateError')) return; // skipped animations, not real errors
+    reportFatal(r, 'promise');
+  });
+
   // ---------- Constants ----------
   const STORE_KEY = 'productive.v1';
   const UI_KEY = 'productive.ui.v1';
@@ -74,13 +126,77 @@
   function loadState() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY));
-      if (s && typeof s.weeks === 'object' && Array.isArray(s.categories) && s.categories.length) return s;
+      if (s && typeof s === 'object' && s.weeks && typeof s.weeks === 'object' && Array.isArray(s.categories)) return sanitize(s);
     } catch (_) { /* ignore corrupt data */ }
     return freshState();
   }
+  // ---------- Limits (keep the app fast and stop it being flooded) ----------
+  const LIMITS = { title: 120, location: 160, notes: 2000, catName: 30, categories: 30, tasksPerWeek: 300, weeks: 60 };
+  const SAFE_ID = /^[A-Za-z0-9_-]{1,64}$/;   // ids are written into the page, so only these characters are allowed
+  const clip = (v, n) => String(v ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').slice(0, n);
+
+  // Rebuilds saved data from scratch using only known fields and valid values.
+  // Anything malformed or tampered with (hand-edited storage, odd characters,
+  // oversized data) is repaired or dropped, so it can't break or hijack the page.
+  function sanitize(s) {
+    const okDay = (d) => Number.isInteger(d) && d >= 0 && d <= 6;
+    const cats = [];
+    const catIds = new Set();
+    for (const c of Array.isArray(s.categories) ? s.categories : []) {
+      if (!c || typeof c.id !== 'string' || !SAFE_ID.test(c.id) || catIds.has(c.id)) continue;
+      const name = clip(c.name, LIMITS.catName).trim();
+      if (!name) continue;
+      catIds.add(c.id);
+      cats.push({ id: c.id, name, color: /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : '#8D92A1' });
+      if (cats.length >= LIMITS.categories) break;
+    }
+    const weeks = {};
+    const seenTasks = new Set();
+    const weekKeys = Object.keys(s.weeks && typeof s.weeks === 'object' ? s.weeks : {})
+      .filter((k) => /^\d{4}-\d{2}-\d{2}$/.test(k) && Array.isArray(s.weeks[k]))
+      .sort().slice(0, LIMITS.weeks);
+    for (const key of weekKeys) {
+      const list = [];
+      for (const t of s.weeks[key]) {
+        if (!t || typeof t !== 'object' || !okDay(t.day)) continue;
+        let id = typeof t.id === 'string' && SAFE_ID.test(t.id) ? t.id : uid();
+        if (seenTasks.has(id)) id = uid();
+        seenTasks.add(id);
+        const task = {
+          id,
+          title: clip(t.title, LIMITS.title).trim() || 'Untitled task',
+          day: t.day,
+          time: /^([01]\d|2[0-3]):[0-5]\d$/.test(t.time || '') ? t.time : '',
+          status: ['create', 'progress', 'done'].includes(t.status) ? t.status : 'create',
+          cat: typeof t.cat === 'string' && SAFE_ID.test(t.cat) ? t.cat : 'misc',
+          priority: [1, 2, 3, 4, 5].includes(t.priority) ? t.priority : 3,
+          location: clip(t.location, LIMITS.location),
+          notes: clip(t.notes, LIMITS.notes),
+          createdAt: Number.isFinite(Number(t.createdAt)) ? Number(t.createdAt) : 0,
+        };
+        if (okDay(t.originalDay)) task.originalDay = t.originalDay;
+        list.push(task);
+        if (list.length >= LIMITS.tasksPerWeek) break;
+      }
+      weeks[key] = list;
+    }
+    s.categories = cats.length ? cats : DEFAULT_CATEGORIES.map((c) => ({ ...c }));
+    s.weeks = weeks;
+    s.version = 1;
+    s.activeWeek = typeof s.activeWeek === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s.activeWeek) ? s.activeWeek : '';
+    for (const k of Object.keys(s)) if (!['version', 'activeWeek', 'categories', 'weeks'].includes(k)) delete s[k];
+    return s;
+  }
+
   function loadUI() {
-    try { return { filter: [], showPast: false, ...JSON.parse(localStorage.getItem(UI_KEY)) }; }
-    catch (_) { return { filter: [], showPast: false }; }
+    const out = { filter: [], showPast: false, welcomeDismissed: false };
+    try {
+      const u = JSON.parse(localStorage.getItem(UI_KEY)) || {};
+      if (Array.isArray(u.filter)) out.filter = u.filter.filter((f) => typeof f === 'string' && SAFE_ID.test(f)).slice(0, LIMITS.categories);
+      out.showPast = u.showPast === true;
+      out.welcomeDismissed = u.welcomeDismissed === true;
+    } catch (_) { /* use defaults */ }
+    return out;
   }
   function save() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
@@ -102,6 +218,24 @@
   const ensureWeek = (key) => (state.weeks[key] ||= []);
   const viewWeekStart = () => addDays(startOfWeek(new Date()), viewOffset * 7);
   const viewWeekKey = () => dateKey(viewWeekStart());
+  // Readable text color for a category tag: starts from the category color and
+  // lightens it until it has at least 4.6:1 contrast on its tinted background.
+  const catTextCache = new Map();
+  function catTextColor(hex) {
+    if (catTextCache.has(hex)) return catTextCache.get(hex);
+    const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+    const lum = (c) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
+    const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+    const mix = (a, b, t) => a.map((v, i) => Math.round(v * (1 - t) + b[i] * t));
+    const c = /^#[0-9a-f]{6}$/i.test(hex) ? rgb(hex) : [141, 146, 161];
+    const bg = mix([26, 29, 37], c, 0.16);           // tag background on a card (ink-3 + 16% color)
+    let out = c, t = 0;
+    while (ratio(out, bg) < 4.6 && t < 1) { t += 0.05; out = mix(c, [255, 255, 255], t); }
+    const css = `rgb(${out.join(',')})`;
+    catTextCache.set(hex, css);
+    return css;
+  }
+
   const catById = (id) => state.categories.find((c) => c.id === id) || { id, name: 'Uncategorized', color: '#8D92A1' };
 
   function dueDate(weekKey, t) {
@@ -155,8 +289,17 @@
   function update(mutate) {
     mutate();
     save();
-    if (document.startViewTransition && !reduceMotion) document.startViewTransition(render);
+    if (document.startViewTransition && !reduceMotion) animate(render);
     else render();
+  }
+
+  // Runs a DOM update inside a View Transition. Skipped animations are ignored;
+  // a real error inside the update goes to the error page.
+  function animate(fn) {
+    const t = document.startViewTransition(fn);
+    t.updateCallbackDone.catch((err) => reportFatal(err, 'render'));
+    t.ready.catch(() => {});
+    t.finished.catch(() => {});
   }
 
   // ---------- Rendering ----------
@@ -173,12 +316,16 @@
     renderStrip(weekStart, tasks, isCurrent, todayIdx);
     renderBoard(weekStart, key, tasks, isCurrent, todayIdx);
     renderCountdown();
+    renderWelcome();
     lastSig = signature();
   }
 
   function renderHeader(weekStart) {
     const end = addDays(weekStart, 6);
-    $('#weekRange').textContent = `${fmtShort(weekStart)} – ${fmtShort(end)}`;
+    // "Oct 11 – 17" within one month, "Sep 27 – Oct 3" across months (keeps it short on phones)
+    $('#weekRange').textContent = weekStart.getMonth() === end.getMonth()
+      ? `${fmtShort(weekStart)} – ${end.getDate()}`
+      : `${fmtShort(weekStart)} – ${fmtShort(end)}`;
     $('#weekTag').textContent = viewOffset === 0 ? 'This week' : viewOffset === 1 ? 'Next week' : `In ${viewOffset} weeks`;
     $('#prevWeek').disabled = viewOffset === 0;
     $('#nextWeek').disabled = viewOffset >= MAX_WEEKS_AHEAD;
@@ -213,7 +360,8 @@
       `<button class="filter ${active.size ? '' : 'active'}" data-filter="all">All</button>` +
       state.categories.map((c) =>
         `<button class="filter ${active.has(c.id) ? 'active' : ''}" data-filter="${esc(c.id)}" style="--c:${esc(c.color)}"><i></i>${esc(c.name)}</button>`
-      ).join('');
+      ).join('') +
+      `<button class="filter filter-new" data-new-cat title="Create your own category" aria-label="Create a new category">+ New<span class="fn-long"> category</span></button>`;
   }
 
   function renderStrip(weekStart, tasks, isCurrent, todayIdx) {
@@ -319,7 +467,7 @@
 
     return `<article class="card ${t.status === 'done' ? 'is-done' : ''} ${overdue ? 'is-overdue' : ''}"
         ${CAN_NATIVE_DRAG ? 'draggable="true"' : ''} tabindex="0" data-id="${t.id}"
-        style="--cat:${esc(cat.color)}; view-transition-name:${t.id}"
+        style="--cat:${esc(cat.color)}; --cat-text:${catTextColor(cat.color)}; view-transition-name:${t.id}"
         aria-label="${esc(t.title)}, ${esc(cat.name)}, priority ${t.priority}">
       <div class="card-top">
         <span class="cat-tag"><i></i>${esc(cat.name)}</span>
@@ -437,8 +585,8 @@
       return `<button type="button" role="radio" data-v="${i}" ${locked ? 'disabled' : ''}>${n.slice(0, 3)}<small>${addDays(weekStart, i).getDate()}</small></button>`;
     }).join('');
     $('#fStatus').innerHTML = STATUSES.map((s) => `<button type="button" role="radio" data-v="${s.id}">${s.label}</button>`).join('');
-    $('#fCats').innerHTML = state.categories.map((c) =>
-      `<button type="button" role="radio" data-v="${esc(c.id)}" style="--c:${esc(c.color)}"><i></i>${esc(c.name)}</button>`).join('');
+    renderCatChips();
+    closeCatCreate();
     $('#fPrio').innerHTML = [1, 2, 3, 4, 5].map((p) =>
       `<button type="button" role="radio" data-v="${p}"><b>${p}</b><small>${PRIORITY_LABELS[p]}</small></button>`).join('');
     syncPickers();
@@ -446,6 +594,87 @@
     taskModal.showModal();
     requestAnimationFrame(() => $('#fTitle').focus());
   }
+
+  function renderCatChips() {
+    $('#fCats').innerHTML = state.categories.map((c) =>
+      `<button type="button" role="radio" data-v="${esc(c.id)}" style="--c:${esc(c.color)}"><i></i>${esc(c.name)}</button>`).join('') +
+      '<button type="button" class="cat-new" id="catNewBtn" aria-expanded="false">+ New category</button>';
+  }
+
+  // ---------- Create-your-own categories ----------
+  const SWATCHES = ['#FF4D4F', '#FF9F1C', '#FFD60A', '#8AC926', '#2EC4B6', '#3A86FF', '#5E60CE', '#C04CFD', '#FF5D8F', '#A4A9B8'];
+  const sameColor = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
+  // A color not used yet by any category, so new categories look distinct by default
+  const nextFreeColor = () => SWATCHES.find((c) => !state.categories.some((k) => sameColor(k.color, c))) || SWATCHES[0];
+
+  function renderSwatches(box, selected) {
+    box.innerHTML = SWATCHES.map((c) =>
+      `<button type="button" class="swatch" data-color="${c}" style="--c:${c}" aria-label="Use color ${c}"></button>`).join('') +
+      `<label class="swatch custom" title="Pick any color"><input type="color" aria-label="Pick any color" /><span aria-hidden="true">+</span></label>`;
+    setSwatch(box, selected);
+  }
+  function setSwatch(box, color, fromPicker = false) {
+    box.dataset.value = color;
+    let preset = false;
+    box.querySelectorAll('[data-color]').forEach((b) => {
+      const on = !fromPicker && sameColor(b.dataset.color, color);
+      preset ||= on;
+      b.setAttribute('aria-pressed', String(on));
+    });
+    const custom = box.querySelector('.custom');
+    custom.classList.toggle('is-on', !preset);
+    custom.style.setProperty('--c', color);
+    const input = custom.querySelector('input');
+    if (input.value.toLowerCase() !== color.toLowerCase()) input.value = color;
+  }
+  function bindSwatches(box) {
+    box.addEventListener('click', (e) => { const b = e.target.closest('[data-color]'); if (b) setSwatch(box, b.dataset.color); });
+    box.addEventListener('input', (e) => { if (e.target.type === 'color') setSwatch(box, e.target.value, true); });
+  }
+
+  function addCategory(rawName, color) {
+    const name = String(rawName || '').trim().replace(/\s+/g, ' ').slice(0, 30);
+    if (!name) return { error: 'Give your category a name.' };
+    const dupe = state.categories.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    if (dupe) return { error: `You already have a category called “${dupe.name}”.` };
+    if (state.categories.length >= 30) return { error: 'You can have up to 30 categories. Delete one to add another.' };
+    const cat = { id: 'c' + uid(), name, color: /^#[0-9a-f]{6}$/i.test(color) ? color : nextFreeColor() };
+    state.categories.push(cat);
+    save();
+    return { cat };
+  }
+
+  // In the task window: "+ New category" → name + color → selected for this task
+  function openCatCreate() {
+    $('#catCreate').hidden = false;
+    $('#catNewBtn')?.setAttribute('aria-expanded', 'true');
+    $('#catNewBtn')?.classList.add('is-open');
+    $('#newCatInline').value = '';
+    $('#catCreateError').textContent = '';
+    renderSwatches($('#inlineSwatches'), nextFreeColor());
+    requestAnimationFrame(() => $('#newCatInline').focus());
+  }
+  function closeCatCreate() {
+    $('#catCreate').hidden = true;
+    $('#catNewBtn')?.setAttribute('aria-expanded', 'false');
+    $('#catNewBtn')?.classList.remove('is-open');
+  }
+  function submitCatCreate() {
+    const res = addCategory($('#newCatInline').value, $('#inlineSwatches').dataset.value);
+    if (res.error) { $('#catCreateError').textContent = res.error; $('#newCatInline').focus(); return; }
+    form.cat = res.cat.id;
+    renderCatChips();
+    syncPickers();
+    closeCatCreate();
+    render();
+    toast(`Category “${res.cat.name}” added`);
+  }
+  bindSwatches($('#inlineSwatches'));
+  $('#catCreateAdd').addEventListener('click', submitCatCreate);
+  $('#catCreateCancel').addEventListener('click', closeCatCreate);
+  $('#newCatInline').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); submitCatCreate(); }
+  });
 
   function syncPickers() {
     const map = { fDays: 'day', fStatus: 'status', fCats: 'cat', fPrio: 'priority' };
@@ -459,6 +688,7 @@
     $('#' + el).addEventListener('click', (e) => {
       const b = e.target.closest('button');
       if (!b || b.disabled) return;
+      if (b.id === 'catNewBtn') { $('#catCreate').hidden ? openCatCreate() : closeCatCreate(); return; }
       form[field] = field === 'day' || field === 'priority' ? Number(b.dataset.v) : b.dataset.v;
       syncPickers();
       if (field === 'day') $('#timeError').textContent = '';
@@ -467,8 +697,8 @@
 
   $('#taskForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    const title = $('#fTitle').value.trim();
-    const time = $('#fTime').value;
+    const title = clip($('#fTitle').value, LIMITS.title).trim();
+    const time = /^([01]\d|2[0-3]):[0-5]\d$/.test($('#fTime').value) ? $('#fTime').value : '';
     const data = {
       title,
       day: form.day,
@@ -476,8 +706,8 @@
       status: form.status,
       cat: form.cat,
       priority: form.priority,
-      location: $('#fLocation').value.trim(),
-      notes: $('#fNotes').value.trim(),
+      location: clip($('#fLocation').value, LIMITS.location).trim(),
+      notes: clip($('#fNotes').value, LIMITS.notes).trim(),
     };
 
     if (!title) {
@@ -488,6 +718,10 @@
 
     const key = viewWeekKey();
     const existing = editing ? findTask(editing.id, editing.weekKey) : null;
+    if (!existing && weekTasks(key).length >= LIMITS.tasksPerWeek) {
+      $('#titleError').textContent = `This week already has ${LIMITS.tasksPerWeek} tasks, the most it can hold. Finish or delete some first.`;
+      return;
+    }
     const whenChanged = !existing || existing.day !== data.day || (existing.time || '') !== data.time;
     if (viewOffset === 0 && whenChanged && data.status !== 'done' && data.time) {
       if (dueDate(key, data) < new Date()) {
@@ -543,7 +777,15 @@
       </li>`).join('');
   }
 
-  $('#catBtn').addEventListener('click', () => { renderCatList(); catModal.showModal(); });
+  function openCatModal(focusNew = false) {
+    renderCatList();
+    $('#newCatName').value = '';
+    $('#catAddError').textContent = '';
+    renderSwatches($('#modalSwatches'), nextFreeColor());
+    catModal.showModal();
+    if (focusNew) requestAnimationFrame(() => $('#newCatName').focus());
+  }
+  $('#catBtn').addEventListener('click', () => openCatModal());
 
   $('#catList').addEventListener('input', (e) => {
     const li = e.target.closest('li');
@@ -551,7 +793,7 @@
     const c = state.categories.find((x) => x.id === li.dataset.cat);
     if (!c) return;
     if (e.target.matches('[data-cat-color]')) c.color = e.target.value;
-    if (e.target.matches('[data-cat-name]')) c.name = e.target.value.trim() || c.name;
+    if (e.target.matches('[data-cat-name]')) c.name = clip(e.target.value, LIMITS.catName).trim() || c.name;
     save();
     render();
   });
@@ -570,13 +812,16 @@
     toast(reassigned ? `Deleted “${removed.name}” — ${reassigned} task${reassigned === 1 ? '' : 's'} moved to ${fallback.name}` : `Deleted “${removed.name}”`);
   });
 
+  bindSwatches($('#modalSwatches'));
   $('#catAddForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    const name = $('#newCatName').value.trim();
-    if (!name) { $('#newCatName').focus(); return; }
-    state.categories.push({ id: 'c' + uid(), name, color: $('#newCatColor').value });
+    const res = addCategory($('#newCatName').value, $('#modalSwatches').dataset.value);
+    if (res.error) { $('#catAddError').textContent = res.error; $('#newCatName').focus(); return; }
+    $('#catAddError').textContent = '';
     $('#newCatName').value = '';
-    save(); renderCatList(); render();
+    renderSwatches($('#modalSwatches'), nextFreeColor());
+    renderCatList(); render();
+    toast(`Category “${res.cat.name}” added`);
   });
 
   // ---------- Board interactions ----------
@@ -775,7 +1020,7 @@
     const next = Math.max(0, Math.min(MAX_WEEKS_AHEAD, offset));
     if (next === viewOffset) return;
     viewOffset = next;
-    if (document.startViewTransition && !reduceMotion) document.startViewTransition(render);
+    if (document.startViewTransition && !reduceMotion) animate(render);
     else render();
     window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   }
@@ -792,6 +1037,7 @@
   });
 
   $('#filters').addEventListener('click', (e) => {
+    if (e.target.closest('[data-new-cat]')) { openCatModal(true); return; }
     const b = e.target.closest('[data-filter]');
     if (!b) return;
     const id = b.dataset.filter;
@@ -814,6 +1060,7 @@
     if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
     if ($('dialog[open]') || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) return;
     if (e.key === 'n' || e.key === 'N') { e.preventDefault(); openTaskModal(); }
+    else if (e.key === '?') { e.preventDefault(); location.href = 'help.html'; }
     else if (e.key === 'ArrowRight' && e.shiftKey) goToWeek(viewOffset + 1);
     else if (e.key === 'ArrowLeft' && e.shiftKey) goToWeek(viewOffset - 1);
   });
@@ -850,7 +1097,37 @@
   });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
 
+  // ---------- Welcome banner (first visit) ----------
+  // Shown until the user dismisses it or adds their first task, so the
+  // how-to page is impossible to miss for new users.
+  function renderWelcome() {
+    const hasTasks = Object.values(state.weeks).some((w) => w.length);
+    $('#welcome').hidden = !!ui.welcomeDismissed || hasTasks;
+  }
+  $('#welcomeClose').addEventListener('click', () => {
+    ui.welcomeDismissed = true;
+    saveUI();
+    renderWelcome();
+  });
+  $('#year').textContent = new Date().getFullYear();
+
+  // ---------- Bookmark tip (fits the visitor's device) ----------
+  (function bookmarkTip() {
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/.test(ua);
+    const isMac = /Mac/.test(navigator.platform || '') || /Macintosh|Mac OS X/.test(ua);
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    let html;
+    if (standalone) html = 'You\u2019ve added Productive to your home screen. Nice, it\u2019s always one tap away.';
+    else if (isIOS) html = 'Tap <b>Share</b> \u2192 <b>Add to Home Screen</b> to open it like an app, or keep this tab open.';
+    else if (isAndroid) html = 'Tap <b>\u22ee</b> \u2192 <b>Add to Home screen</b> to open it like an app, or keep this tab open.';
+    else html = `Press <kbd class="kbd">${isMac ? '\u2318' : 'Ctrl'}</kbd> + <kbd class="kbd">D</kbd> to bookmark it, or keep it open in a pinned tab.`;
+    $('#bookmarkHint').innerHTML = html;
+  })();
+
   // ---------- Boot ----------
+  save(); // store the cleaned-up (sanitized) data right away, so tampered data doesn't linger
   checkRollover();
   measureBars();
   const movedOnLoad = shiftOverdue();

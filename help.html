@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="description" content="How to use Productive: adding tasks, moving them, the weekly reset, overdue tasks, categories and more." />
+  <meta name="theme-color" content="#0C0D11" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <title>How to use Productive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="pages.css" />
+</head>
+<body class="doc-body">
+  <header class="topbar doc-top" id="top">
+    <a class="brand" href="index.html" aria-label="Productive — back to planner">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">productive<span class="dot">.</span></span>
+    </a>
+    <div class="top-actions">
+      <a class="primary-btn" href="index.html">
+        <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>
+        <span>Back to planner</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="doc-wrap prose">
+    <span class="eyebrow">How to</span>
+    <h1>How to use <em>Productive.</em></h1>
+    <p class="lead">Everything you need to plan your week, in about five minutes. Tap a topic to jump straight to it.</p>
+
+    <nav class="jump" aria-label="Topics">
+      <a href="#quick-start">Quick start</a>
+      <a href="#card">Reading a task card</a>
+      <a href="#adding">Adding tasks</a>
+      <a href="#moving">Moving tasks</a>
+      <a href="#editing">Editing &amp; deleting</a>
+      <a href="#reset">Weekly reset</a>
+      <a href="#overdue">Overdue tasks</a>
+      <a href="#categories">Categories &amp; priority</a>
+      <a href="#navigating">Weeks &amp; filters</a>
+      <a href="#phone">On your phone</a>
+      <a href="#no-account">No account needed</a>
+      <a href="#bookmark">Bookmark it</a>
+      <a href="#shortcuts">Shortcuts</a>
+      <a href="#faq">FAQ</a>
+      <a href="#trouble">Troubleshooting</a>
+      <a href="contact.html">Contact me</a>
+    </nav>
+
+    <!-- 1. Quick start -->
+    <section id="quick-start">
+      <h2><span class="num">1</span>Quick start</h2>
+      <p>Productive is a weekly planner. Each week, Sunday to Saturday, is its own clean page. Every day has three columns: <strong>Create</strong> (planned), <strong>In progress</strong> and <strong>Done</strong>.</p>
+      <ol class="steps">
+        <li>
+          <span class="step-num">1</span>
+          <b>Add a task</b>
+          <span>Click <strong>New task</strong> at the top, or the lime <strong>+</strong> button on your phone. Give it a name and pick a day.</span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <b>Move it along</b>
+          <span>Drag the card to <strong>In progress</strong>, then <strong>Done</strong>. Or tap the arrow on the card.</span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <b>Start fresh</b>
+          <span>At <strong>Saturday midnight</strong> the week clears. Sunday starts empty, with no backlog.</span>
+        </li>
+      </ol>
+      <div class="callout lime">
+        <span class="callout-icon"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></span>
+        <p><b>No sign-up, no setup, and everything saves automatically.</b> There's no account to create and no save button. Reload, close the tab or restart your browser and your week is still there.</p>
+      </div>
+    </section>
+
+    <!-- 2. Card anatomy -->
+    <section id="card">
+      <h2><span class="num">2</span>Reading a task card</h2>
+      <div class="anatomy">
+        <div class="demo" aria-hidden="true">
+          <article class="card" style="--cat:#C04CFD; --cat-text:#e6b3ff">
+            <div class="card-top">
+              <span class="cat-tag"><i></i>Appointment</span><i class="pin">1</i>
+              <span class="prio p1">P1</span><i class="pin">2</i>
+            </div>
+            <h4>Dentist appointment <i class="pin">3</i></h4>
+            <p class="notes">Bring insurance card. <i class="pin">4</i></p>
+            <div class="meta">
+              <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>2:00 PM</span>
+              <span><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Spring Garden Rd</span>
+              <i class="pin">5</i>
+              <span class="moved"><svg viewBox="0 0 24 24"><path d="M4 12h12M12 6l6 6-6 6"/><path d="M20 5v14"/></svg>from Tue</span><i class="pin">6</i>
+            </div>
+            <span class="advance" style="display:grid"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </article>
+          <p style="margin:10px 0 0;font-size:12.5px;color:var(--faint);text-align:right">Arrow button <i class="pin">7</i></p>
+        </div>
+        <ol>
+          <li><strong>Category</strong>: the colored tag and the stripe on the left edge.</li>
+          <li><strong>Priority</strong>: P1 (urgent) to P5 (someday). P1 is solid lime.</li>
+          <li><strong>Title</strong>: what needs doing. Done tasks are crossed out.</li>
+          <li><strong>Notes</strong>: the first two lines of your notes.</li>
+          <li><strong>Time &amp; location</strong>: tap the location to open it in Maps.</li>
+          <li><strong>"from Tue"</strong>: the task wasn't finished in time and moved forward automatically.</li>
+          <li><strong>Arrow</strong>: moves the task to the next column.</li>
+        </ol>
+      </div>
+      <p>A red <strong>Overdue</strong> badge means the task's time passed on Saturday, the last day of the week.</p>
+    </section>
+
+    <!-- 3. Adding -->
+    <section id="adding">
+      <h2><span class="num">3</span>Adding tasks</h2>
+      <p>There are four ways to add a task:</p>
+      <ul>
+        <li>Click <strong>New task</strong> in the top bar (desktop).</li>
+        <li>Tap the lime <strong>+</strong> button in the bottom-right corner (phone).</li>
+        <li>Click <strong>+ Add</strong> on any day, or <strong>Add a task</strong> in an empty Create column. The day is filled in for you.</li>
+        <li>Press <kbd class="key">N</kbd> on your keyboard.</li>
+      </ul>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Field</th><th>Needed?</th><th>What it's for</th></tr></thead>
+          <tbody>
+            <tr><td><strong>What needs doing?</strong></td><td>Yes</td><td>The task name.</td></tr>
+            <tr><td><strong>Day</strong></td><td>Yes</td><td>Which day of the week. Days that have already passed are greyed out.</td></tr>
+            <tr><td><strong>Time</strong></td><td>Optional</td><td>Sorts the task and decides when it counts as overdue. You can't pick a time that's already passed today.</td></tr>
+            <tr><td><strong>Status</strong></td><td>Yes</td><td>Create, In progress or Done. New tasks start in Create.</td></tr>
+            <tr><td><strong>Category</strong></td><td>Yes</td><td>Color-codes the task (Work, Gym, Appointment…). Tap <strong>+ New category</strong> to create your own.</td></tr>
+            <tr><td><strong>Priority</strong></td><td>Yes</td><td>1 is most urgent, 5 is "someday". Starts at 3.</td></tr>
+            <tr><td><strong>Location</strong></td><td>Optional</td><td>Handy for appointments. Becomes a Maps link on the card.</td></tr>
+            <tr><td><strong>Notes</strong></td><td>Optional</td><td>Details, links, things to bring.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Click <strong>Add task</strong> to save. The board scrolls to that day so you can see it.</p>
+    </section>
+
+    <!-- 4. Moving -->
+    <section id="moving">
+      <h2><span class="num">4</span>Moving tasks</h2>
+      <h3>On a computer</h3>
+      <p>Click and drag a card into another column, or onto a different day. The column lights up lime when you can drop it.</p>
+      <h3>On a phone or tablet</h3>
+      <p><strong>Press and hold</strong> a card for a moment until it lifts, then drag it. Drag near the top or bottom of the screen to scroll, or toward the left or right edge to slide between columns. A quick swipe just scrolls the page as normal.</p>
+      <h3>The arrow button</h3>
+      <p>The round arrow on each card moves it one step: <strong>Create → In progress → Done</strong>. On a Done task it reopens it back to Create. On phones the arrow is always visible; on a computer it appears when you hover over the card.</p>
+      <h3>From the edit window</h3>
+      <p>Open a task and change its <strong>Status</strong> or <strong>Day</strong>, then save.</p>
+    </section>
+
+    <!-- 5. Editing -->
+    <section id="editing">
+      <h2><span class="num">5</span>Editing &amp; deleting</h2>
+      <ul>
+        <li><strong>Edit:</strong> click or tap any card to open it. Change anything and press <strong>Save changes</strong>.</li>
+        <li><strong>Delete:</strong> open the task and press <strong>Delete</strong>. An <strong>Undo</strong> button appears at the bottom of the screen for a few seconds in case it was a mistake.</li>
+      </ul>
+    </section>
+
+    <!-- 6. Reset -->
+    <section id="reset">
+      <h2><span class="num">6</span>The weekly reset</h2>
+      <p>This is the heart of Productive: <strong>no backlog, ever</strong>. Each week runs from Sunday 12:00 AM to Saturday 11:59 PM.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>At Saturday midnight…</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>The week that just ended</td><td><strong>Deleted permanently</strong>, finished and unfinished tasks alike.</td></tr>
+            <tr><td>Tasks you planned for future weeks</td><td><strong>Kept.</strong> Next week becomes "This week".</td></tr>
+            <tr><td>Your categories and settings</td><td><strong>Kept.</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>The countdown in the top bar (or under the progress bar on phones) shows exactly how long is left.</li>
+        <li>You can look ahead to future weeks, but never back at past ones.</li>
+        <li><strong>Tip:</strong> if something must happen next week, use the <strong>→</strong> arrow next to the week dates to go to next week and add it there before Saturday.</li>
+      </ul>
+      <div class="callout">
+        <span class="callout-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg></span>
+        <p><b>Don't keep important records here.</b> Because each week is deleted on purpose, Productive is for planning, not for storing things you need to keep.</p>
+      </div>
+    </section>
+
+    <!-- 7. Overdue -->
+    <section id="overdue">
+      <h2><span class="num">7</span>Overdue tasks</h2>
+      <p>If a task isn't marked <strong>Done</strong> by its time, it moves to the <strong>next day at the same time</strong>. It keeps moving each day until Saturday.</p>
+      <ul>
+        <li>A task <strong>with a time</strong> is overdue once that time passes.</li>
+        <li>A task <strong>without a time</strong> is overdue at midnight at the end of its day.</li>
+        <li><strong>Done</strong> tasks never move.</li>
+        <li>Moved tasks show a lime <strong>"from Tue"</strong> badge so you know where they started.</li>
+        <li>On Saturday there's nowhere left to go, so the task stays and shows <strong>Overdue</strong> until the weekly reset.</li>
+      </ul>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Task</th><th>Planned for</th><th>You open the app</th><th>Where it ends up</th></tr></thead>
+          <tbody>
+            <tr><td>Dentist</td><td>Tue 2:00 PM</td><td>Thu 9:00 AM</td><td>Thu 2:00 PM</td></tr>
+            <tr><td>Groceries (no time)</td><td>Wed</td><td>Thu 9:00 AM</td><td>Thu</td></tr>
+            <tr><td>Report</td><td>Fri 5:00 PM</td><td>Sat 11:00 PM</td><td>Sat 5:00 PM, marked Overdue</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8. Categories -->
+    <section id="categories">
+      <h2><span class="num">8</span>Categories &amp; priority</h2>
+      <h3>Categories</h3>
+      <p>Productive comes with a few starter categories (Work, Gym, Miscellaneous, Appointment, Personal, Study), but you can <strong>make your own</strong> with any name and color.</p>
+      <p><strong>From the category row:</strong> tap <strong>+ New category</strong> at the end of the row of category chips above the days (on phones it's the <strong>+ New</strong> chip pinned on the right). Name it, pick a color, and it appears as a new chip you can filter by.</p>
+      <p><strong>While adding a task:</strong> tap <strong>+ New category</strong> under the category list. Name it, pick a color, and tap <strong>Add category</strong>. It's selected for that task straight away.</p>
+      <p>Click <strong>Categories</strong> in the top bar (the four-dot button on phones) to:</p>
+      <ul>
+        <li><strong>Change a color:</strong> tap its round color swatch.</li>
+        <li><strong>Rename:</strong> type over the name.</li>
+        <li><strong>Create your own:</strong> type a name (like <em>Kids</em>, <em>Side project</em> or <em>Errands</em>), pick a color from the swatches (or tap the rainbow <strong>+</strong> for any color), and press <strong>Add category</strong>.</li>
+        <li><strong>Delete:</strong> tap the trash icon. Its tasks move to Miscellaneous so nothing is lost.</li>
+      </ul>
+      <h3>Priority</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Level</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><strong>P1</strong></td><td>Urgent: do this first</td></tr>
+            <tr><td><strong>P2</strong></td><td>High</td></tr>
+            <tr><td><strong>P3</strong></td><td>Medium (default)</td></tr>
+            <tr><td><strong>P4</strong></td><td>Low</td></tr>
+            <tr><td><strong>P5</strong></td><td>Someday: nice to get to</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Inside each column, tasks sort by priority first, then by time.</p>
+    </section>
+
+    <!-- 9. Navigating -->
+    <section id="navigating">
+      <h2><span class="num">9</span>Weeks, days &amp; filters</h2>
+      <ul>
+        <li><strong>Change week:</strong> use the arrows beside the dates at the top. On larger screens, <strong>Today</strong> brings you back to this week.</li>
+        <li><strong>Jump to a day:</strong> tap a day in the strip of dates (Sun–Sat). Today is highlighted in lime.</li>
+        <li><strong>Earlier days:</strong> days already past this week are folded into one bar. Tap <strong>Show</strong> to open them.</li>
+        <li><strong>Filter:</strong> tap category chips (Work, Gym…) to show only those tasks. Tap <strong>All</strong> to clear.</li>
+        <li><strong>Progress:</strong> the bar and the To do / In progress / Done counts show how your week is going.</li>
+      </ul>
+    </section>
+
+    <!-- 10. Phone -->
+    <section id="phone">
+      <h2><span class="num">10</span>On your phone</h2>
+      <ul>
+        <li>Add tasks with the lime <strong>+</strong> button in the bottom-right corner.</li>
+        <li>Each day's three columns sit side by side. <strong>Swipe left</strong> on a day to see In progress and Done.</li>
+        <li>Forms slide up from the bottom. Tap outside them or the <strong>×</strong> to close.</li>
+        <li>Press and hold a card to drag it (see <a href="#moving">Moving tasks</a>).</li>
+      </ul>
+      <h3>Add it to your home screen</h3>
+      <p>Productive can sit on your home screen and open full screen, just like an app:</p>
+      <ul>
+        <li><strong>iPhone (Safari):</strong> tap the <strong>Share</strong> button, then <strong>Add to Home Screen</strong>.</li>
+        <li><strong>Android (Chrome):</strong> tap the <strong>⋮</strong> menu, then <strong>Add to Home screen</strong> or <strong>Install app</strong>.</li>
+      </ul>
+      <div class="callout">
+        <span class="callout-icon"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 17h2"/></svg></span>
+        <p><b>Your phone and computer have separate lists.</b> Tasks are saved in the browser you use, so tasks added on your phone won't appear on your laptop. Add Productive to your home screen so it's one tap away (see <a href="#bookmark">Bookmark it</a>).</p>
+      </div>
+    </section>
+
+    <!-- 11. No account -->
+    <section id="no-account">
+      <h2><span class="num">11</span>No account needed</h2>
+      <p>There's no sign-up, no password and nothing to set up, on purpose. Productive is built to be as simple as possible: open the page and plan.</p>
+      <ul>
+        <li><strong>It saves automatically</strong> in your browser, on your device. Reload, close the tab or restart your computer and your week is still there.</li>
+        <li><strong>It resets every week.</strong> Saturday at midnight the finished week is cleared, so there's never a backlog to manage.</li>
+        <li><strong>It's private.</strong> No email, no tracking. Your tasks never leave your device.</li>
+      </ul>
+      <div class="callout">
+        <span class="callout-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <p><b>Use the same browser each time.</b> Each browser and device keeps its own planner. Tasks you add in Chrome on your laptop won't show up in Safari on your phone.</p>
+      </div>
+    </section>
+
+    <!-- 12. Bookmark -->
+    <section id="bookmark">
+      <h2><span class="num">12</span>Bookmark it or keep it open</h2>
+      <p>The easiest way to use Productive is to keep it one click away.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Device</th><th>How</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Windows / Linux</strong> (Chrome, Edge, Firefox)</td><td>Press <kbd class="key">Ctrl</kbd> + <kbd class="key">D</kbd>, then click <strong>Done</strong>. Turn on the bookmarks bar with <kbd class="key">Ctrl</kbd> + <kbd class="key">Shift</kbd> + <kbd class="key">B</kbd> so it's always visible.</td></tr>
+            <tr><td><strong>Mac</strong> (Safari, Chrome)</td><td>Press <kbd class="key">⌘</kbd> + <kbd class="key">D</kbd>, then click <strong>Add</strong> or <strong>Done</strong>. Show the bookmarks bar with <kbd class="key">⌘</kbd> + <kbd class="key">Shift</kbd> + <kbd class="key">B</kbd>.</td></tr>
+            <tr><td><strong>iPhone / iPad</strong> (Safari)</td><td>Tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>. It opens full screen like an app.</td></tr>
+            <tr><td><strong>Android</strong> (Chrome)</td><td>Tap <strong>⋮</strong>, then <strong>Add to Home screen</strong> or <strong>Install app</strong>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Or keep it open all week</h3>
+      <p>Right-click the tab and choose <strong>Pin</strong> (Chrome and Edge) or <strong>Pin Tab</strong> (Firefox and Safari). The planner stays open in a small tab at the left, updates itself live (overdue tasks move, the week resets on its own), and is always there when you need it.</p>
+    </section>
+
+    <!-- 13. Shortcuts -->
+    <section id="shortcuts">
+      <h2><span class="num">13</span>Keyboard shortcuts</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Keys</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd class="key">N</kbd></td><td>New task</td></tr>
+            <tr><td><kbd class="key">?</kbd></td><td>Open this how-to page</td></tr>
+            <tr><td><kbd class="key">Shift</kbd> + <kbd class="key">→</kbd></td><td>Next week</td></tr>
+            <tr><td><kbd class="key">Shift</kbd> + <kbd class="key">←</kbd></td><td>Previous week</td></tr>
+            <tr><td><kbd class="key">Enter</kbd></td><td>Open the selected card</td></tr>
+            <tr><td><kbd class="key">Esc</kbd></td><td>Close a window</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 12. FAQ -->
+    <section id="faq" class="faq">
+      <h2><span class="num">14</span>FAQ</h2>
+      <details>
+        <summary>Where did my tasks go?</summary>
+        <div><p>If it's a new week, the previous week was cleared at Saturday midnight. That's the weekly reset, and it's on purpose. If tasks disappeared in the middle of the week, your browser's data may have been cleared (see <a href="#trouble">Troubleshooting</a>
+      <a href="contact.html">Contact me</a>).</p></div>
+      </details>
+      <details>
+        <summary>Why did my task move to another day?</summary>
+        <div><p>It wasn't marked Done by its time, so it moved to the next day at the same time. See <a href="#overdue">Overdue tasks</a>.</p></div>
+      </details>
+      <details>
+        <summary>Can I see last week?</summary>
+        <div><p>No. Past weeks are deleted so every week starts clean. You can look at any week ahead.</p></div>
+      </details>
+      <details>
+        <summary>Why can't I add a task to an earlier day?</summary>
+        <div><p>Days that have already passed this week are locked. Add the task to today or a later day instead.</p></div>
+      </details>
+      <details>
+        <summary>It says "That time has already passed". What do I do?</summary>
+        <div><p>You picked today with a time that's already gone. Choose a later time, another day, or leave the time empty.</p></div>
+      </details>
+      <details>
+        <summary>Why is there no sign-in?</summary>
+        <div><p>To keep things simple. No account means nothing to set up, no password to forget, and no personal data stored anywhere but your own device. Open the page and plan.</p></div>
+      </details>
+      <details>
+        <summary>Do my tasks sync between my phone and computer?</summary>
+        <div><p>No. There's no account, so each browser keeps its own list. That's the trade-off for zero setup and complete privacy. Pick the device you plan on most and <a href="#bookmark">bookmark it</a> there.</p></div>
+      </details>
+      <details>
+        <summary>Is my data private?</summary>
+        <div><p>Yes. There's no account, and your tasks are stored only on your device. Nobody else, including the developer, can see them. Read the <a href="privacy.html">Privacy Policy</a> for details.</p></div>
+      </details>
+      <details>
+        <summary>How do I delete all my data?</summary>
+        <div><p>Clear this site's data in your browser settings (often under <em>Privacy</em> → <em>Site data</em> or <em>Cookies and site data</em>). This removes every task, category and setting on that device.</p></div>
+      </details>
+    </section>
+
+    <!-- 13. Troubleshooting -->
+    <section id="trouble">
+      <h2><span class="num">15</span>Troubleshooting</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Problem</th><th>Try this</th></tr></thead>
+          <tbody>
+            <tr><td>Something looks wrong or stuck</td><td>Reload the page. Your tasks are saved.</td></tr>
+            <tr><td>You see an error page</td><td>Press <strong>Try again</strong>. If it keeps happening, press <strong>Report this problem</strong> so it can be fixed.</td></tr>
+            <tr><td>Tasks vanish when you close the browser</td><td>You're probably in a private or incognito window, which deletes site data when closed. Use a normal window.</td></tr>
+            <tr><td>Tasks vanished mid-week</td><td>Your browser's site data was cleared (by you, a cleanup app, or low storage). Unfortunately they can't be recovered.</td></tr>
+            <tr><td>Your tasks aren't there on another device or browser</td><td>That's expected. Each browser keeps its own planner. Open Productive in the browser where you added them.</td></tr>
+            <tr><td>Drag and drop doesn't work on your phone</td><td>Press and <strong>hold</strong> the card until it lifts before moving your finger. Or use the arrow button.</td></tr>
+            <tr><td>The time or day seems off</td><td>Productive uses your device's clock and time zone. Check your device's date settings.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout lime">
+        <span class="callout-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></span>
+        <p><b>Still stuck?</b> <a href="contact.html">Send me a message</a> and describe what happened. I'll help you sort it out.</p>
+      </div>
+      <a class="to-top" href="#top">↑ Back to top</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <nav class="footer-links" aria-label="Site">
+      <a href="index.html">Planner</a>
+      <a href="help.html" aria-current="page">How to use</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <p>© <span class="js-year">2026</span> Productive</p>
+  </footer>
+  <script src="pages.js"></script>
+</body>
+</html>

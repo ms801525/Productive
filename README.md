@@ -23,6 +23,12 @@ A smooth, week-by-week task tracker built with plain HTML, CSS and JavaScript. E
   - [Filters and navigation](#filters-and-navigation)
   - [Keyboard shortcuts](#keyboard-shortcuts)
 - [Using it on your phone](#using-it-on-your-phone)
+- [Pages](#pages)
+- [Error handling](#error-handling)
+- [Contact form](#contact-form)
+- [Accessibility & color contrast](#accessibility--color-contrast)
+- [Security](#security)
+- [Why there's no sign-in](#why-theres-no-sign-in)
 - [Design](#design)
 - [Project structure](#project-structure)
 - [Technical details](#technical-details)
@@ -45,6 +51,11 @@ A smooth, week-by-week task tracker built with plain HTML, CSS and JavaScript. E
 | 💾 **Persistent** | Data survives page reloads and browser restarts, for the whole week. |
 | 🔄 **Weekly reset** | At Saturday midnight the finished week is cleared and the new week starts empty. |
 | 🖱️ **Drag & drop** | Drag cards between columns and between days, with a mouse or by press-and-hold on touch screens. |
+| ❓ **How-to guide** | A full [how-to page](help.html) with a quick start, FAQ and troubleshooting. Reachable from the **How to** button in the top bar, the welcome banner, the footer, or the `?` key. |
+| 🛟 **Friendly error page** | Missing pages and unexpected app errors show a clear page that tells people their tasks are safe, with one-tap problem reporting. |
+| 🙌 **No account, no setup** | No sign-up or password. Open it and plan. Tasks save in the browser and reset every week. Bookmark it or keep it open in a tab. |
+| ✉️ **Contact form** | A [contact page](contact.html) that opens the visitor's email app (or Gmail / Outlook / Yahoo Mail) with their message addressed and ready to send. No backend or third-party form service. |
+| 🔒 **Privacy & Terms** | Plain-language [Privacy Policy](privacy.html) and [Terms of Use](terms.html) pages. |
 | 📱 **Mobile friendly** | Built for phones too: swipeable columns, bottom-sheet forms, a floating + button, big tap targets, and it can be added to your home screen like an app. |
 | ⚡ **No setup** | No frameworks, no build step, no install. Just open `index.html`. |
 
@@ -171,6 +182,8 @@ After you add a task, the board scrolls to that day and a confirmation appears.
 - Click **Delete** in the edit window to remove it. An **Undo** button appears for 6 seconds in case it was a mistake.
 
 ### Categories and colors
+Create your own categories with any name and color: use the **+ New category** chip at the end of the category filter row (pinned as **+ New** on phones), or **+ New category** in the task window, which also selects it for that task. The **Categories** window also lets you create, rename, recolor and delete them.
+
 Click **Categories** in the top bar to:
 - **Recolor** a category: click its color swatch.
 - **Rename** it: type in the name field.
@@ -213,6 +226,7 @@ Inside each column, tasks are sorted by **priority first**, then by **time** (ea
 | Key | Action |
 |---|---|
 | `N` | New task |
+| `?` | Open the how-to page |
 | `Shift` + `→` | Next week |
 | `Shift` + `←` | Previous week (back to the current week) |
 | `Enter` / `Space` | Open the focused card |
@@ -225,7 +239,7 @@ The app adapts to small screens automatically:
 
 | On phones | What changes |
 |---|---|
-| **Header** | Shrinks to one row: logo, week switcher and Categories. |
+| **Header** | Shrinks to one row: logo, week switcher, How to (?) and Categories. Week dates shorten to "Oct 11 – 17" when both ends are in the same month. |
 | **New task** | A floating lime **+** button in the bottom-right corner, within easy reach of your thumb. |
 | **Columns** | Each day's Create, In progress and Done columns become a sideways swipe carousel. The next column peeks in from the right so you know it's there. |
 | **Forms** | The task and Categories windows slide up from the bottom as a sheet. Text fields use 16px text so iPhones don't zoom in when you tap them. |
@@ -244,6 +258,116 @@ This works when the app is served from a web address (such as GitHub Pages), not
 
 > Your tasks are stored per browser. Tasks on your phone and tasks on your laptop are separate lists.
 
+## Pages
+
+| Page | File | What it's for |
+|---|---|---|
+| **Planner** | `index.html` | The app itself. |
+| **How to use** | `help.html` | Step-by-step instructions: quick start, reading a task card, adding/moving/editing tasks, the weekly reset, overdue tasks, categories and priority, phone tips, shortcuts, FAQ and troubleshooting. Topic chips at the top jump straight to each section. |
+| **Privacy Policy** | `privacy.html` | Explains that tasks stay on the device, what's stored, the third-party services involved (GitHub Pages, Google Fonts, Google Maps, and email if they contact you), retention and how to delete data. |
+| **Terms of Use** | `terms.html` | Usage rules, the weekly deletion, no warranty, limitation of liability, and Nova Scotia governing law. |
+| **Contact** | `contact.html` | Contact form that emails alimustafa189@yahoo.com (see below). |
+| **Error page** | `404.html` | Shown for missing pages and for app errors (see below). |
+
+### Making the how-to page easy to find
+New users can't miss it:
+- **How to** button (a **?** icon on phones) in the top bar of the planner, always visible.
+- A **"New here?" welcome banner** with a *Read the how-to* button. It shows until the user dismisses it or adds their first task.
+- **Footer links** on every page: How to use · Privacy · Terms · Contact.
+- The **`?`** keyboard shortcut.
+- The error page and 404 page also link to it.
+
+All pages share the app's look (`styles.css` plus `pages.css`), work on phones, and have a sticky top bar with a **Back to planner** button.
+
+## Why there's no sign-in
+
+**Productive deliberately has no accounts.** It's built to be as simple as possible:
+
+- **No setup.** No sign-up, no password, no email. Open the page and start planning.
+- **Saves automatically.** Tasks are stored in the browser (`localStorage`), so they're still there after a reload or restart.
+- **Resets every week.** Saturday at midnight the finished week clears, so there's never a backlog.
+- **Private by default.** Nothing is sent to a server, so there's no personal data to protect, leak or sell.
+
+The trade-off is that each browser and device keeps its own planner. The app tells users this, and encourages them to **bookmark it or keep it open**:
+
+- An in-app **"No account · No setup"** section near the bottom of the planner explains the idea and shows a bookmark tip that fits the visitor's device: <kbd>⌘</kbd>+<kbd>D</kbd> on Mac, <kbd>Ctrl</kbd>+<kbd>D</kbd> on Windows/Linux, *Add to Home Screen* on iPhone and Android, and a friendly note if it's already installed.
+- The how-to page has **No account needed** and **Bookmark it or keep it open** sections, with steps for every device, including pinning the tab.
+- The first-visit welcome banner says "No sign-up needed".
+
+## Contact form
+
+`contact.html` lets visitors reach the owner at **alimustafa189@yahoo.com** with a question, idea or problem.
+
+- The form has a topic (Question, Idea, Problem, Other), an optional name and reply email, and a message of up to 1,500 characters.
+- **Send message** opens the visitor's email app with the subject (`[Productive] Idea: …`) and body filled in. They press Send.
+- If no email app opens, one-click buttons open the same message in **Gmail**, **Outlook** or **Yahoo Mail** on the web, plus a **Copy message** button.
+- For **Problem** reports, technical details (browser, screen, and the last app error) can be included with a checkbox. Never task content.
+- The error page's **Report this problem** button and the 404 page's **Report a broken link** both open the contact form pre-filled.
+- Nothing is stored or sent by the website itself, and no third-party form service is used.
+- The address is assembled by JavaScript rather than written in the HTML, to reduce spam from address-harvesting bots.
+
+To change the address, edit the `EMAIL` line in `contact.html` (and in the small scripts at the bottom of `privacy.html` and `terms.html`).
+
+## Accessibility & color contrast
+
+All text meets **WCAG 2.1 AA** contrast (at least 4.5:1, or 3:1 for large text), checked with an automated audit of every page and window.
+- `--muted` `#a4a9b8` and `--faint` `#8b90a0` pass on every background shade the app uses.
+- Past days are shown with dashed outlines instead of being faded, so their text stays readable.
+- Category tag text is calculated per color (`catTextColor()` in `app.js`), so even dark custom colors stay readable.
+- Form field outlines (`--field-line`) have at least 3:1 contrast so fields are easy to see.
+
+## Security
+
+### What there is to protect
+Productive is a **static website**: no server, no database, no accounts, no shared data. Each visitor's tasks live only in their own browser. That rules out most attacks by design:
+
+| Concern | Why it isn't a risk here |
+|---|---|
+| Someone seeing other users' tasks | No user data exists anywhere except each person's own browser, and browsers never share it between websites or people. |
+| Bots or fake users | There's nothing for a bot to do: no sign-up, no posting, no shared database, and the contact form can't send email by itself (a person has to press Send in their own email app). A CAPTCHA would only slow down real people. |
+| Overloading / denial of service | Pages are static files served by GitHub Pages' global CDN, which absorbs heavy traffic. There's no backend to overload. |
+| Stealing secrets | The repository contains no passwords, API keys or private data. The only personal detail is the public contact email, which is assembled by script to hide it from simple spam bots. |
+
+### Protections built in
+- **Content Security Policy** on every page: the browser only runs scripts from this site's own files, so injected or third-party code is blocked. It also forbids connections to any outside server (`connect-src 'none'`), so the app can't leak data even if something went wrong. Other restrictions include no plugins, no frames, no `<base>` changes and no form submissions to other sites. Only Google Fonts is allowed from outside.
+- **No inline scripts.** Page scripts live in `app.js`, `pages.js` and `contact.js`. The one exception, `404.html`, is allowed by its SHA-256 hash (it must stay self-contained so it works from any broken address).
+- **All user text is escaped** before it's shown (task titles, notes, locations, category names), so typing HTML or code just shows it as text.
+- **Saved data is strictly checked on load** (`sanitize()` in `app.js`): it's rebuilt from known fields only, IDs must match `[A-Za-z0-9_-]`, colors must be `#rrggbb`, times must be valid, lengths are clipped, duplicates and junk are dropped, and the cleaned data is saved back immediately. Tampering with browser storage can't inject code or crash the app.
+- **Limits** stop anyone flooding the app: 300 tasks per week, 30 categories, 60 weeks of saved data, title 120 / location 160 / notes 2,000 / category name 30 characters, enforced in code as well as in the form fields.
+- **Anti-framing (clickjacking):** if another website loads Productive inside a frame, the page clears itself and shows only an "Open Productive in its own tab" link.
+- **No referrer leaks:** `referrer` is `no-referrer`, so sites like Google Maps or Gmail don't learn which page you came from.
+- **Safe links:** every link that opens a new tab uses `rel="noopener"`. Location links can only ever be a Google Maps search (`javascript:` tricks are impossible).
+- **Error page** shows error details as plain text, and the contact form treats link parameters as plain text.
+
+### Tested
+An automated attack suite (31 checks) tries script injection through every input, tampered and oversized storage (`__proto__` keys, bad IDs, bad colors, garbage rows), crafted URLs, framing by another site, flooding a week, and loading scripts or sending data to an outside server. All are blocked, and the policy blocks nothing the app needs.
+
+### Keeping it secure (owner checklist)
+1. **Turn on two-factor authentication on your GitHub account.** Whoever controls the repo controls the website, so this matters most.
+2. In the repo go to **Settings → Pages** and tick **Enforce HTTPS**.
+3. Never commit passwords or API keys. Nothing in this app needs any.
+4. If you edit the `<script>` at the bottom of `404.html`, update its hash in that file's `Content-Security-Policy` line. The browser console shows the exact value it expects, or run:
+   ```bash
+   python3 -c "import re,hashlib,base64;s=open('404.html').read();print(base64.b64encode(hashlib.sha256(re.search(r'<script>(.*?)</script>',s,re.S).group(1).encode()).digest()).decode())"
+   ```
+5. **Developing with Live Server:** its auto-refresh works by injecting a script, which the security policy (correctly) blocks. Pages still load fine. Just press refresh (⌘/Ctrl + Shift + R) after saving a change.
+
+## Error handling
+
+`404.html` has two modes:
+
+| Mode | When | What the user sees |
+|---|---|---|
+| **Page not found** | Any address that doesn't exist (GitHub Pages serves `404.html` automatically) | "This page took the week off." Their tasks are safe, plus buttons back to the planner and the how-to page. *Report a broken link* opens the contact form with the bad address filled in. |
+| **App error** | `404.html?type=error`: the app sends people here if anything breaks | "Something went wrong. I'm on it." Their tasks are safe, with buttons to **Try again**, **Report this problem** (opens the contact form with the error details ready, never task content), **Download backup** of tasks as JSON, and a two-tap **Reset app** if it keeps failing. A *Technical details* section shows the error. |
+
+How it works in `app.js`:
+- A safety net at the top of the file listens for uncaught errors and failed promises from the app's own code. It saves the last 10 error details on the device (`productive.errors.v1`) and redirects to the error page. Errors from browser extensions and harmless cancelled animations are ignored.
+- **Damaged data can't crash the app.** On load, `sanitize()` checks every saved task and category, and repairs or drops anything malformed before rendering.
+- `404.html` is fully self-contained (inline styles, links calculated at runtime), so it still looks right when GitHub Pages serves it from a deep broken address like `/Productive/a/b/c`.
+
+Reports go through the [contact form](#contact-form) to your email. No GitHub account is needed.
+
 ## Design
 - **Two-color scheme:** deep ink (`#0C0D11`) and electric lime (`#D6FF3D`). Category colors appear only as small tags and card accents.
 - **Typography:** [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) for headings and [Inter](https://fonts.google.com/specimen/Inter) for body text, with system fonts as a fallback when offline.
@@ -259,8 +383,16 @@ This works when the app is served from a web address (such as GitHub Pages), not
 
 ```
 Productive/
-├── index.html      # Page layout, task dialog and categories dialog
+├── index.html      # The planner: page layout, task dialog and categories dialog
+├── help.html       # How-to guide
+├── privacy.html    # Privacy Policy
+├── terms.html      # Terms of Use
+├── contact.html    # Contact form (opens the visitor's email app)
+├── 404.html        # Page-not-found + app error page (self-contained)
 ├── styles.css      # Theme, layout, animations and responsive rules
+├── pages.css       # Extra styles for the how-to, privacy and terms pages
+├── pages.js        # Shared script for the how-to, privacy, terms and contact pages
+├── contact.js      # Contact form logic
 ├── app.js          # All app logic (weeks, storage, auto-shift, drag & drop, touch drag)
 ├── manifest.webmanifest   # Lets the app be installed to a phone's home screen
 ├── icons/
@@ -287,7 +419,8 @@ Productive/
 | Key | Contents |
 |---|---|
 | `productive.v1` | Categories, the active week and all tasks, grouped by week |
-| `productive.ui.v1` | UI preferences (active filters, show/hide earlier days) |
+| `productive.ui.v1` | UI preferences (active filters, show/hide earlier days, welcome banner dismissed) |
+| `productive.errors.v1` | The last 10 app errors, used only by the error page's report button |
 
 **Data shape**
 ```json
@@ -320,6 +453,7 @@ Productive/
 - `originalDay` exists only on tasks that were auto-shifted.
 
 **Main pieces of `app.js`**
+- The error safety net (top of the file) and `sanitize()` keep problems from leaving users stuck.
 - `checkRollover()` deletes every week older than the current one when a new week starts.
 - `shiftOverdue()` applies the auto-shift rules to the current week.
 - `render()` rebuilds the header, summary, filters, day strip and board from state.
@@ -339,17 +473,16 @@ Works in current versions of **Chrome, Edge, Firefox and Safari** (desktop and m
 ---
 
 ## Limitations
-- Data lives in **one browser on one device**. It doesn't sync between your laptop and phone, and clearing your browser data erases it.
+- By design there are no accounts, so data lives in **one browser on one device**, and clearing browser data erases it.
 - Past weeks are deleted by design, so there's no history or statistics across weeks.
 - There are no reminders or notifications.
 
 ## Ideas for future versions
-- Cloud sync / accounts so tasks follow you across devices
 - Browser notifications before a task's time
 - Recurring tasks (e.g. "Gym every Mon/Wed/Fri")
 - Light theme toggle
 - Weekly summary before the reset (what got done, what carried over)
-- Export / import as JSON
+- Import a backup file (the error page can already export one)
 
 ---
 
