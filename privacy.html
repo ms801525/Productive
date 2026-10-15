@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; base-uri 'none'; form-action 'none'" />
   <meta name="referrer" content="no-referrer" />
   <meta name="description" content="Productive's privacy policy: no accounts, and your tasks stay on your device. No tracking, no ads." />
   <meta name="theme-color" content="#0C0D11" />
@@ -49,6 +49,8 @@
       <a href="#third">Third parties</a>
       <a href="#retention">How long</a>
       <a href="#choices">Your choices</a>
+      <a href="#security">Security</a>
+      <a href="#canada">Your rights</a>
       <a href="#children">Children</a>
       <a href="#changes">Changes</a>
       <a href="#contact">Contact</a>
@@ -67,12 +69,16 @@
           <thead><tr><th>Information</th><th>Why</th></tr></thead>
           <tbody>
             <tr><td><strong>Your tasks</strong>: title, day, time, status, category, priority, location and notes</td><td>To show your weekly planner.</td></tr>
+            <tr><td><strong>Repeating tasks</strong>: the same details as a task, plus which weeks you skipped</td><td>To add them to each new week.</td></tr>
+            <tr><td><strong>Last week's summary</strong>: only numbers (tasks done, total) and your most-finished category name</td><td>To show the "week in review" card. Replaced every week.</td></tr>
             <tr><td><strong>Your categories</strong>: names and colors</td><td>To color-code your tasks.</td></tr>
-            <tr><td><strong>Display preferences</strong>: filters, whether earlier days are shown, whether you dismissed the welcome message</td><td>So the app looks the way you left it.</td></tr>
+            <tr><td><strong>Display preferences</strong>: filters, whether earlier days are shown, whether you dismissed the welcome message or weekly notices</td><td>So the app looks the way you left it.</td></tr>
             <tr><td><strong>Error details</strong>: the last 10 technical error messages, the time, the page and your browser type</td><td>So you can choose to report a problem. They stay on your device unless you report one.</td></tr>
           </tbody>
         </table>
       </div>
+      <p><strong>Reminders</strong> (if you turn them on) are created by your own browser on your device. Notifications are shown by your browser and operating system. Nothing is sent to a server, and you can turn notifications off any time in your browser's site settings.</p>
+      <p>Your browser also keeps an <strong>offline copy of the app's own files</strong> (pages, styles, scripts and icons) so Productive opens without internet. That copy contains no personal information.</p>
       <p>Because this information is stored on your device, anyone who uses your device and browser can see it. If you share a device, keep that in mind before adding private details to your tasks.</p>
     </section>
 
@@ -103,7 +109,8 @@
       <ul>
         <li><strong>Each week's tasks</strong> are deleted automatically at Saturday midnight (your local time).</li>
         <li><strong>Tasks planned for future weeks</strong> are kept until that week ends.</li>
-        <li><strong>Categories and preferences</strong> are kept until you clear your browser's data.</li>
+        <li><strong>Repeating tasks, categories and preferences</strong> are kept until you change them, use <strong>Erase everything</strong>, or clear your browser's data.</li>
+        <li><strong>Last week's summary</strong> is replaced when each new week starts.</li>
         <li><strong>Error details</strong>: only the 10 most recent are kept.</li>
         <li>In a <strong>private or incognito window</strong>, everything is deleted when you close the window.</li>
       </ul>
@@ -113,24 +120,40 @@
       <h2><span class="num">6</span>Your choices and rights</h2>
       <ul>
         <li><strong>See your data:</strong> everything stored is visible in the app.</li>
+        <li><strong>Take your data with you:</strong> <strong>Your data → Download a backup</strong> saves everything to a file on your device. Keep backup files somewhere safe, since anyone with the file can read your tasks.</li>
+        <li><strong>Erase your data:</strong> <strong>Your data → Erase everything</strong> deletes it all from this browser straight away.</li>
         <li><strong>Delete your data:</strong> clear this site's data in your browser settings. This removes all tasks, categories, preferences and error details from that device. If the app ever shows its error page, you can also download a backup or reset the app from there.</li>
         <li><strong>Stop using it:</strong> you can stop at any time. Nothing is left anywhere except on your own device.</li>
       </ul>
       <p>Since we don't collect or hold any of your personal information, there's nothing for us to access, correct or delete on your behalf. If you have a question about your privacy rights, see <a href="#contact">Contact</a>.</p>
     </section>
 
+    <section id="security">
+      <h2><span class="num">7</span>How your information is protected</h2>
+      <ul>
+        <li>Your tasks never leave your device, so there's no server or database that could be breached.</li>
+        <li>The website only runs its own code. A strict security policy blocks scripts from anywhere else, and the app isn't allowed to send data to any server.</li>
+        <li>Everything is served over an encrypted (HTTPS) connection.</li>
+      </ul>
+    </section>
+
+    <section id="canada">
+      <h2><span class="num">8</span>Your rights in Canada</h2>
+      <p>Productive is run from Nova Scotia, Canada, and aims to follow Canada's federal privacy law, the <em>Personal Information Protection and Electronic Documents Act</em> (PIPEDA). If you have a privacy question or concern, please <a href="contact.html">contact me</a> first and I'll do my best to help. If you're not satisfied, you can contact the <a href="https://www.priv.gc.ca/" target="_blank" rel="noopener">Office of the Privacy Commissioner of Canada</a>.</p>
+    </section>
+
     <section id="children">
-      <h2><span class="num">7</span>Children</h2>
+      <h2><span class="num">9</span>Children</h2>
       <p>Productive isn't directed at children under 13, and we don't knowingly collect information from anyone. All data stays on the user's device.</p>
     </section>
 
     <section id="changes">
-      <h2><span class="num">8</span>Changes to this policy</h2>
+      <h2><span class="num">10</span>Changes to this policy</h2>
       <p>If Productive changes how it handles information, for example by adding accounts or paid plans, this policy will be updated <strong>before</strong> the change takes effect, and the date at the top will change. Features that collect new information will tell you clearly before you use them.</p>
     </section>
 
     <section id="contact">
-      <h2><span class="num">9</span>Contact</h2>
+      <h2><span class="num">11</span>Contact</h2>
       <p>Questions about this policy or your privacy? <a href="contact.html">Send me a message</a> or email <a class="js-email" href="contact.html">me</a>.</p>
       <a class="to-top" href="#top">↑ Back to top</a>
     </section>

@@ -87,12 +87,15 @@
 
   const ICONS = {
     plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+    bell: '<svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
     clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
     pin: '<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
     arrow: '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
     check: '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
     undo: '<svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>',
+    repeat: '<svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>',
     shift: '<svg viewBox="0 0 24 24"><path d="M4 12h12M12 6l6 6-6 6"/><path d="M20 5v14"/></svg>',
+    close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     alert: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>',
     chevron: '<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
     trash: '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
@@ -121,7 +124,7 @@
 
   // ---------- State ----------
   function freshState() {
-    return { version: 1, activeWeek: currentWeekKey(), categories: DEFAULT_CATEGORIES.map((c) => ({ ...c })), weeks: {} };
+    return { version: 1, activeWeek: currentWeekKey(), categories: DEFAULT_CATEGORIES.map((c) => ({ ...c })), weeks: {}, routines: [] };
   }
   function loadState() {
     try {
@@ -131,7 +134,10 @@
     return freshState();
   }
   // ---------- Limits (keep the app fast and stop it being flooded) ----------
-  const LIMITS = { title: 120, location: 160, notes: 2000, catName: 30, categories: 30, tasksPerWeek: 300, weeks: 60 };
+  const LIMITS = { title: 120, location: 160, notes: 2000, catName: 30, categories: 30, tasksPerWeek: 300, weeks: 60, routines: 50 };
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const REMIND_MIN = 15;   // reminders pop up this many minutes before a task's time
+  const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
   const SAFE_ID = /^[A-Za-z0-9_-]{1,64}$/;   // ids are written into the page, so only these characters are allowed
   const clip = (v, n) => String(v ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').slice(0, n);
 
@@ -175,16 +181,51 @@
           createdAt: Number.isFinite(Number(t.createdAt)) ? Number(t.createdAt) : 0,
         };
         if (okDay(t.originalDay)) task.originalDay = t.originalDay;
+        if (typeof t.routineId === 'string' && SAFE_ID.test(t.routineId)) task.routineId = t.routineId;
+        if (t.remind === true && task.time) task.remind = true;
+        if (Number.isFinite(t.remindedFor)) task.remindedFor = t.remindedFor;
         list.push(task);
         if (list.length >= LIMITS.tasksPerWeek) break;
       }
       weeks[key] = list;
     }
+    // Repeating tasks: templates that are added to every new week
+    const routines = [];
+    const rIds = new Set();
+    for (const r of Array.isArray(s.routines) ? s.routines : []) {
+      if (!r || typeof r.id !== 'string' || !SAFE_ID.test(r.id) || rIds.has(r.id) || !okDay(r.day)) continue;
+      const title = clip(r.title, LIMITS.title).trim();
+      if (!title) continue;
+      rIds.add(r.id);
+      routines.push({
+        id: r.id,
+        title,
+        day: r.day,
+        time: TIME_RE.test(r.time || '') ? r.time : '',
+        cat: typeof r.cat === 'string' && SAFE_ID.test(r.cat) ? r.cat : 'misc',
+        priority: [1, 2, 3, 4, 5].includes(r.priority) ? r.priority : 3,
+        location: clip(r.location, LIMITS.location),
+        notes: clip(r.notes, LIMITS.notes),
+        remind: r.remind === true && TIME_RE.test(r.time || ''),
+        since: typeof r.since === 'string' && DATE_RE.test(r.since) ? r.since : '',
+        skip: (Array.isArray(r.skip) ? r.skip : []).filter((k) => typeof k === 'string' && DATE_RE.test(k)).slice(-60),
+      });
+      if (routines.length >= LIMITS.routines) break;
+    }
+    // Last week's summary (numbers only, shown once on Sunday)
+    const lw = s.lastWeek;
+    const lastWeek = lw && typeof lw === 'object' && typeof lw.week === 'string' && DATE_RE.test(lw.week)
+      && Number.isInteger(lw.total) && lw.total > 0 && lw.total <= LIMITS.tasksPerWeek
+      && Number.isInteger(lw.done) && lw.done >= 0 && lw.done <= lw.total
+      ? { week: lw.week, total: lw.total, done: lw.done, top: clip(lw.top, LIMITS.catName) } : null;
+
     s.categories = cats.length ? cats : DEFAULT_CATEGORIES.map((c) => ({ ...c }));
     s.weeks = weeks;
+    s.routines = routines;
+    if (lastWeek) s.lastWeek = lastWeek; else delete s.lastWeek;
     s.version = 1;
-    s.activeWeek = typeof s.activeWeek === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s.activeWeek) ? s.activeWeek : '';
-    for (const k of Object.keys(s)) if (!['version', 'activeWeek', 'categories', 'weeks'].includes(k)) delete s[k];
+    s.activeWeek = typeof s.activeWeek === 'string' && DATE_RE.test(s.activeWeek) ? s.activeWeek : '';
+    for (const k of Object.keys(s)) if (!['version', 'activeWeek', 'categories', 'weeks', 'routines', 'lastWeek'].includes(k)) delete s[k];
     return s;
   }
 
@@ -195,12 +236,22 @@
       if (Array.isArray(u.filter)) out.filter = u.filter.filter((f) => typeof f === 'string' && SAFE_ID.test(f)).slice(0, LIMITS.categories);
       out.showPast = u.showPast === true;
       out.welcomeDismissed = u.welcomeDismissed === true;
+      if (typeof u.reviewSeen === 'string' && DATE_RE.test(u.reviewSeen)) out.reviewSeen = u.reviewSeen;
+      if (typeof u.satDismissed === 'string' && DATE_RE.test(u.satDismissed)) out.satDismissed = u.satDismissed;
     } catch (_) { /* use defaults */ }
     return out;
   }
+  // Saving problems are shown once as a clear notice instead of a toast on every action.
+  let storageProblem = null;     // null | 'blocked' | 'full'
   function save() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
-    catch (_) { toast('Couldn’t save — browser storage is full or blocked'); }
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      if (storageProblem) { storageProblem = null; renderNotices(); }
+    } catch (err) {
+      const full = err && (err.name === 'QuotaExceededError' || err.code === 22 || err.code === 1014);
+      const kind = full ? 'full' : 'blocked';
+      if (storageProblem !== kind) { storageProblem = kind; renderNotices(); }
+    }
   }
   function saveUI() {
     try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch (_) { /* non-critical */ }
@@ -253,11 +304,50 @@
     const key = currentWeekKey();
     if (state.activeWeek === key) return false;
     const hadPrevious = !!state.activeWeek;
+    // Keep a tiny summary (numbers only) of the week that just ended, for the "week in review" card
+    const prev = hadPrevious && state.weeks[state.activeWeek];
+    if (prev && prev.length && state.activeWeek < key) {
+      const doneTasks = prev.filter((t) => t.status === 'done');
+      const counts = {};
+      doneTasks.forEach((t) => { counts[t.cat] = (counts[t.cat] || 0) + 1; });
+      const topId = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
+      state.lastWeek = { week: state.activeWeek, total: prev.length, done: doneTasks.length, top: topId ? catById(topId).name : '' };
+    } else if (hadPrevious) {
+      delete state.lastWeek;
+    }
     Object.keys(state.weeks).forEach((k) => { if (k < key) delete state.weeks[k]; });
+    state.routines.forEach((r) => { r.skip = r.skip.filter((k) => k >= key); });
     state.activeWeek = key;
     save();
     if (viewOffset > 0) viewOffset = Math.max(0, viewOffset - 1);
     return hadPrevious;
+  }
+
+  // ---------- Repeating tasks ----------
+  // Each repeating task is a template. Every week from the current one onward
+  // gets one copy of it on its day, unless that week's copy was deleted (skip).
+  const routineById = (id) => state.routines.find((r) => r.id === id);
+  function ensureRoutines(key) {
+    if (!state.routines.length || key < currentWeekKey()) return false;
+    const isCurrent = key === currentWeekKey();
+    const now = new Date();
+    let added = false;
+    for (const r of state.routines) {
+      if (r.skip.includes(key) || (r.since && key < r.since)) continue;
+      // Don't add a copy whose time has already passed (e.g. first visit mid-week),
+      // so routines missed while you were away don't pile up as overdue tasks.
+      if (isCurrent && dueDate(key, r) < now) continue;
+      const tasks = state.weeks[key] || [];
+      if (tasks.some((t) => t.routineId === r.id)) continue;
+      if (tasks.length >= LIMITS.tasksPerWeek) break;
+      (state.weeks[key] ||= []).push({
+        id: uid(), routineId: r.id, title: r.title, day: r.day, time: r.time, status: 'create',
+        cat: r.cat, priority: r.priority, location: r.location, notes: r.notes, createdAt: Date.now(),
+        ...(r.remind ? { remind: true } : {}),
+      });
+      added = true;
+    }
+    return added;
   }
 
   // ---------- Overdue auto-shift ----------
@@ -306,6 +396,10 @@
   function render() {
     const weekStart = viewWeekStart();
     const key = dateKey(weekStart);
+    if (ensureRoutines(key)) {
+      if (key === currentWeekKey()) shiftOverdue();
+      save();
+    }
     const tasks = weekTasks(key);
     const isCurrent = viewOffset === 0;
     const todayIdx = new Date().getDay();
@@ -317,6 +411,7 @@
     renderBoard(weekStart, key, tasks, isCurrent, todayIdx);
     renderCountdown();
     renderWelcome();
+    renderNotices();
     lastSig = signature();
   }
 
@@ -452,6 +547,7 @@
     const overdue = isOverdue(weekKey, t);
     const meta = [];
     if (t.time) meta.push(`<span>${ICONS.clock}${esc(fmtTime(t.time))}</span>`);
+    if (t.remind && t.time && t.status !== 'done') meta.push(`<span class="remind" title="Reminder ${REMIND_MIN} minutes before">${ICONS.bell}Reminder</span>`);
     if (t.location) {
       const url = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(t.location);
       meta.push(`<a href="${url}" target="_blank" rel="noopener" title="Open in Maps">${ICONS.pin}${esc(t.location)}</a>`);
@@ -459,6 +555,7 @@
     if (t.originalDay != null && t.originalDay !== t.day && t.status !== 'done') {
       meta.push(`<span class="moved" title="Auto-moved because it wasn't finished in time">${ICONS.shift}from ${DAY_NAMES[t.originalDay].slice(0, 3)}</span>`);
     }
+    if (t.routineId && routineById(t.routineId)) meta.push(`<span class="repeat" title="Repeats every ${DAY_NAMES[routineById(t.routineId).day]}">${ICONS.repeat}Weekly</span>`);
     if (overdue) meta.push(`<span class="overdue">${ICONS.alert}Overdue</span>`);
 
     const next = t.status === 'create' ? { icon: ICONS.arrow, label: 'Start (move to In progress)' }
@@ -532,10 +629,43 @@
     const idx = list.findIndex((t) => t.id === id);
     if (idx < 0) return;
     const [removed] = list.slice(idx, idx + 1);
-    update(() => { list.splice(idx, 1); });
-    toast('Task deleted', 'Undo', () => {
-      update(() => { ensureWeek(key).splice(Math.min(idx, ensureWeek(key).length), 0, removed); });
+    const routine = removed.routineId ? routineById(removed.routineId) : null;
+    update(() => {
+      list.splice(idx, 1);
+      if (routine && !routine.skip.includes(key)) routine.skip.push(key); // don't bring it back this week
     });
+    const msg = routine ? `Removed from this week. It still repeats every ${DAY_NAMES[routine.day]}.` : 'Task deleted';
+    toast(msg, 'Undo', () => {
+      update(() => {
+        ensureWeek(key).splice(Math.min(idx, ensureWeek(key).length), 0, removed);
+        if (routine) routine.skip = routine.skip.filter((k) => k !== key);
+      });
+    });
+  }
+
+  // Stop a repeating task: remove the template and its untouched copies in later weeks.
+  function stopRoutine(routineId, fromKey) {
+    state.routines = state.routines.filter((r) => r.id !== routineId);
+    for (const k of Object.keys(state.weeks)) {
+      if (k <= fromKey) continue;
+      state.weeks[k] = state.weeks[k].filter((x) => !(x.routineId === routineId && x.status === 'create'));
+    }
+  }
+
+  // Move tasks to the same day next week (used by the task window and the Saturday notice).
+  function moveToNextWeek(ids, key) {
+    const nextKey = dateKey(addDays(parseKey(key), 7));
+    const room = LIMITS.tasksPerWeek - weekTasks(nextKey).length;
+    const list = weekTasks(key);
+    const moving = list.filter((t) => ids.includes(t.id) && !t.routineId).slice(0, Math.max(0, room));
+    if (!moving.length) return 0;
+    state.weeks[key] = list.filter((t) => !moving.includes(t));
+    for (const t of moving) {
+      t.day = t.originalDay ?? t.day;   // back to the day it was planned for
+      delete t.originalDay;
+      ensureWeek(nextKey).push(t);
+    }
+    return moving.length;
   }
 
   // If a manual edit put a task in the past (current week), apply the shift rule right away.
@@ -571,10 +701,17 @@
     $('#modalTitle').textContent = t ? 'Edit task' : 'New task';
     $('#saveBtn').textContent = t ? 'Save changes' : 'Add task';
     $('#deleteBtn').hidden = !t;
+    const routine = t && t.routineId ? routineById(t.routineId) : null;
+    $('#fRepeat').checked = !!routine;
+    $('#fRepeat').disabled = !routine && state.routines.length >= LIMITS.routines;
+    // "Move to next week": for tasks that don't repeat (repeating ones come back on their own)
+    $('#moveNextBtn').hidden = !t || !!routine || viewOffset >= MAX_WEEKS_AHEAD;
     $('#fTitle').value = t ? t.title : '';
     $('#fTime').value = t ? t.time || '' : '';
     $('#fLocation').value = t ? t.location || '' : '';
     $('#fNotes').value = t ? t.notes || '' : '';
+    $('#fRemind').checked = !!(t && t.remind);
+    syncRemind();
     $('#titleError').textContent = '';
     $('#timeError').textContent = '';
 
@@ -590,6 +727,7 @@
     $('#fPrio').innerHTML = [1, 2, 3, 4, 5].map((p) =>
       `<button type="button" role="radio" data-v="${p}"><b>${p}</b><small>${PRIORITY_LABELS[p]}</small></button>`).join('');
     syncPickers();
+    updateRepeatHint();
 
     taskModal.showModal();
     requestAnimationFrame(() => $('#fTitle').focus());
@@ -676,6 +814,16 @@
     if (e.key === 'Enter') { e.preventDefault(); submitCatCreate(); }
   });
 
+  function updateRepeatHint() {
+    const full = $('#fRepeat').disabled;
+    $('#repeatHint').textContent = full
+      ? `You have ${LIMITS.routines} repeating tasks, the most allowed`
+      : $('#fRepeat').checked
+        ? `Comes back every ${DAY_NAMES[form.day]}, even after the weekly reset`
+        : 'Turn on to have it come back every week on the same day';
+  }
+  $('#fRepeat').addEventListener('change', updateRepeatHint);
+
   function syncPickers() {
     const map = { fDays: 'day', fStatus: 'status', fCats: 'cat', fPrio: 'priority' };
     Object.entries(map).forEach(([el, field]) => {
@@ -691,7 +839,7 @@
       if (b.id === 'catNewBtn') { $('#catCreate').hidden ? openCatCreate() : closeCatCreate(); return; }
       form[field] = field === 'day' || field === 'priority' ? Number(b.dataset.v) : b.dataset.v;
       syncPickers();
-      if (field === 'day') $('#timeError').textContent = '';
+      if (field === 'day') { $('#timeError').textContent = ''; updateRepeatHint(); }
     });
   });
 
@@ -709,6 +857,7 @@
       location: clip($('#fLocation').value, LIMITS.location).trim(),
       notes: clip($('#fNotes').value, LIMITS.notes).trim(),
     };
+    data.remind = !!time && $('#fRemind').checked;
 
     if (!title) {
       $('#titleError').textContent = 'Give your task a name.';
@@ -731,22 +880,61 @@
       }
     }
 
+    const wantRepeat = $('#fRepeat').checked && !$('#fRepeat').disabled;
+    const hadRoutine = existing && existing.routineId ? routineById(existing.routineId) : null;
     taskModal.close();
     update(() => {
-      if (existing) {
-        if (existing.day !== data.day) delete existing.originalDay;
-        Object.assign(existing, data);
+      let task = existing;
+      if (task) {
+        if (task.day !== data.day) delete task.originalDay;
+        Object.assign(task, data);
       } else {
-        ensureWeek(key).push({ id: uid(), createdAt: Date.now(), ...data });
+        task = { id: uid(), createdAt: Date.now(), ...data };
+        ensureWeek(key).push(task);
+      }
+      if (!task.remind) delete task.remind;
+      const tpl = { title: data.title, day: data.day, time: data.time, cat: data.cat, priority: data.priority, location: data.location, notes: data.notes, remind: data.remind };
+      if (wantRepeat) {
+        if (hadRoutine) {
+          // Changing a repeating task updates its future weeks too
+          Object.assign(hadRoutine, tpl);
+          for (const k of Object.keys(state.weeks)) {
+            if (k <= key) continue;
+            state.weeks[k].forEach((x) => { if (x.routineId === hadRoutine.id && x.status === 'create') Object.assign(x, tpl); });
+          }
+        } else {
+          const r = { id: 'r' + uid(), ...tpl, since: key, skip: [] };
+          state.routines.push(r);
+          task.routineId = r.id;
+        }
+      } else if (hadRoutine) {
+        // "Repeat every week" turned off: stop repeating, keep this week's task
+        stopRoutine(hadRoutine.id, key);
+        delete task.routineId;
       }
     });
+    afterManualChange();
+    if (data.remind) askNotificationPermission();
+    scheduleNextReminder();
+    if (wantRepeat && !hadRoutine) toast(`Repeats every ${DAY_NAMES[data.day]}`);
+    else if (!wantRepeat && hadRoutine) toast('Stopped repeating. This week’s task stays.');
     if (!existing) {
-      toast(`Added to ${DAY_NAMES[data.day]}`);
+      if (!wantRepeat) toast(`Added to ${DAY_NAMES[data.day]}`);
       setTimeout(() => {
         const el = document.getElementById('day-' + data.day);
         if (el && !isInView(el)) el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
       }, 60);
     }
+  });
+
+  $('#moveNextBtn').addEventListener('click', () => {
+    if (!editing) return;
+    const { id, weekKey } = editing;
+    taskModal.close();
+    let n = 0;
+    update(() => { n = moveToNextWeek([id], weekKey); });
+    if (n) toast('Moved to next week', 'View', () => goToWeek(viewOffset + 1));
+    else toast('Next week is full. Delete some tasks there first.');
   });
 
   $('#deleteBtn').addEventListener('click', () => {
@@ -1083,6 +1271,7 @@
   function tick() {
     renderCountdown();
     if (draggingId) return;
+    checkReminders();
     const rolled = checkRollover();
     const moved = shiftOverdue();
     if (rolled) toast('New week, clean slate ✨');
@@ -1096,6 +1285,242 @@
     if (e.key === STORE_KEY) { state = loadState(); render(); }
   });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+
+  // ---------- Reminders ----------
+  // Simple by design: tasks with "Remind me" on get one notification 15 minutes
+  // before their time, while Productive is open (tab, pinned tab or home-screen app).
+  // If notifications aren't allowed, a small pop-up shows inside the app instead.
+  const remindAt = (key, t) => dueDate(key, t).getTime() - REMIND_MIN * 60000;
+
+  function checkReminders() {
+    const now = Date.now();
+    const key = currentWeekKey();
+    const due = weekTasks(key).filter((t) => {
+      if (!t.remind || !t.time || t.status === 'done') return false;
+      const at = remindAt(key, t);
+      return now >= at && now < at + REMIND_MIN * 60000 && t.remindedFor !== at; // only while it's still coming up
+    });
+    if (!due.length) return;
+    due.forEach((t) => { t.remindedFor = remindAt(key, t); });
+    save();  // saved first, so another open tab won't remind twice
+    due.forEach((t) => showReminder(key, t));
+  }
+
+  // Wake up right when the next reminder is due (the 20-second tick is the safety net)
+  let reminderTimer = null;
+  function scheduleNextReminder() {
+    clearTimeout(reminderTimer);
+    const now = Date.now();
+    const key = currentWeekKey();
+    const next = Math.min(...weekTasks(key)
+      .filter((t) => t.remind && t.time && t.status !== 'done')
+      .map((t) => remindAt(key, t)).filter((at) => at > now), Infinity);
+    if (next !== Infinity) reminderTimer = setTimeout(() => { checkReminders(); scheduleNextReminder(); }, Math.min(next - now + 250, 2 ** 31 - 1));
+  }
+
+  function showReminder(key, t) {
+    const mins = Math.max(0, Math.round((dueDate(key, t).getTime() - Date.now()) / 60000));
+    const text = `Starts at ${fmtTime(t.time)}${mins ? ` (in ${mins} min)` : ''}${t.location ? ` · ${t.location}` : ''}`;
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const opts = { body: text, tag: 'productive-' + t.id, icon: 'icons/icon-192.png' };
+      const plain = () => { try { new Notification('⏰ ' + t.title, opts); } catch (_) { popInApp(t, text); } };
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then((reg) => reg.showNotification('⏰ ' + t.title, opts)).catch(plain);
+      } else plain();
+      if (!document.hidden) popInApp(t, text);   // also show it on screen if they're looking at the app
+    } else {
+      popInApp(t, text);
+    }
+  }
+
+  // Small in-app pop-up (used when notifications are off, or the app is on screen)
+  function popInApp(t, text) {
+    const box = $('#alerts');
+    box.querySelector(`[data-alert="${t.id}"]`)?.remove();
+    const card = document.createElement('div');
+    card.className = 'alert-card';
+    card.dataset.alert = t.id;
+    card.style.setProperty('--cat', catById(t.cat).color);
+    card.setAttribute('role', 'alert');
+    card.innerHTML = `<span class="alert-bell">${ICONS.bell}</span>
+      <div class="alert-body"><span class="alert-kicker">Coming up</span><b></b><span class="alert-when"></span></div>
+      <button type="button" class="icon-btn alert-close" aria-label="Dismiss reminder">${ICONS.close}</button>`;
+    card.querySelector('b').textContent = t.title;          // plain text only
+    card.querySelector('.alert-when').textContent = text;
+    box.prepend(card);
+    const close = () => { card.classList.add('leaving'); setTimeout(() => card.remove(), 220); };
+    card.querySelector('.alert-close').addEventListener('click', close);
+    setTimeout(close, 60000);                                // tidies itself away after a minute
+  }
+
+  let permissionAsked = false;
+  function askNotificationPermission() {
+    if (permissionAsked || !('Notification' in window)) return;
+    permissionAsked = true;
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().then((p) => {
+        if (p !== 'granted') toast('Notifications are off, so reminders will pop up inside Productive while it’s open.');
+      }).catch(() => {});
+    }
+  }
+
+  // Task window: "Remind me" only makes sense with a time
+  function syncRemind() {
+    const hasTime = TIME_RE.test($('#fTime').value);
+    $('#fRemind').disabled = !hasTime;
+    if (!hasTime) $('#fRemind').checked = false;
+    $('#remindHint').textContent = hasTime
+      ? `Optional · get a notification ${REMIND_MIN} minutes before`
+      : 'Optional · add a time to use it';
+  }
+  $('#fTime').addEventListener('input', syncRemind);
+  $('#fTime').addEventListener('change', syncRemind);
+
+  // ---------- Notices: storage problems, Saturday heads-up, week in review ----------
+  function noticeHTML(kind, icon, title, text, actions) {
+    return `<div class="notice notice-${kind}" role="status">
+      <span class="notice-icon">${icon}</span>
+      <div class="notice-text"><b>${title}</b><span>${text}</span></div>
+      <div class="notice-actions">${actions}</div>
+    </div>`;
+  }
+  function renderNotices() {
+    const box = $('#notices');
+    if (!box) return;
+    const out = [];
+    const key = currentWeekKey();
+    const now = new Date();
+
+    if (storageProblem === 'blocked') {
+      out.push(noticeHTML('warn', ICONS.alert, 'Your browser isn’t letting Productive save',
+        'This usually means a private/incognito window or blocked site data. Your tasks will disappear when you close this tab.',
+        '<a class="ghost-btn" href="help.html#trouble">How to fix</a>'));
+    } else if (storageProblem === 'full') {
+      out.push(noticeHTML('warn', ICONS.alert, 'Browser storage is full',
+        'Your latest changes couldn’t be saved. Download a backup, then delete some tasks or free up space.',
+        '<button type="button" class="ghost-btn" data-open-data>Your data</button>'));
+    }
+
+    if (viewOffset === 0) {
+      // Saturday: warn before the reset and offer to carry unfinished tasks forward
+      const unfinished = weekTasks(key).filter((t) => t.status !== 'done' && !t.routineId);
+      if (now.getDay() === 6 && unfinished.length && ui.satDismissed !== key) {
+        const n = unfinished.length;
+        out.push(noticeHTML('sat', ICONS.clock, `The week resets tonight at midnight`,
+          `${n} unfinished task${n === 1 ? '' : 's'} will be cleared. Want to keep ${n === 1 ? 'it' : 'them'} for next week?`,
+          `<button type="button" class="primary-btn" data-move-unfinished>Move ${n} to next week</button>
+           <button type="button" class="icon-btn" data-dismiss="sat" aria-label="Dismiss">${ICONS.close}</button>`));
+      }
+      // Sunday (or first visit of a new week): last week's summary
+      const lw = state.lastWeek;
+      if (lw && ui.reviewSeen !== lw.week) {
+        const pct = Math.round((lw.done / lw.total) * 100);
+        const msg = pct === 100 ? 'Everything done. Great week!' : pct >= 60 ? 'Solid week.' : 'New week, fresh start.';
+        out.push(noticeHTML('review', ICONS.check, `Last week: ${lw.done} of ${lw.total} done (${pct}%)`,
+          `${esc(msg)}${lw.top ? ` Most finished: ${esc(lw.top)}.` : ''} Everything from last week has been cleared.`,
+          `<button type="button" class="icon-btn" data-dismiss="review" aria-label="Dismiss">${ICONS.close}</button>`));
+      }
+    }
+    box.innerHTML = out.join('');
+  }
+  $('#notices').addEventListener('click', (e) => {
+    if (e.target.closest('[data-open-data]')) { openDataModal(); return; }
+    const d = e.target.closest('[data-dismiss]');
+    if (d) {
+      if (d.dataset.dismiss === 'sat') ui.satDismissed = currentWeekKey();
+      if (d.dataset.dismiss === 'review' && state.lastWeek) ui.reviewSeen = state.lastWeek.week;
+      saveUI();
+      renderNotices();
+      return;
+    }
+    if (e.target.closest('[data-move-unfinished]')) {
+      const key = currentWeekKey();
+      const ids = weekTasks(key).filter((t) => t.status !== 'done' && !t.routineId).map((t) => t.id);
+      let n = 0;
+      update(() => { n = moveToNextWeek(ids, key); });
+      if (n) toast(`Moved ${n} task${n === 1 ? '' : 's'} to next week`, 'View', () => goToWeek(1));
+      else toast('Next week is full. Delete some tasks there first.');
+    }
+  });
+
+  // ---------- Your data: backup, restore, erase ----------
+  const dataModal = $('#dataModal');
+  function openDataModal() {
+    $('#dataError').textContent = '';
+    resetErase();
+    let bytes = 0;
+    try { bytes = (localStorage.getItem(STORE_KEY) || '').length * 2; } catch (_) {}
+    const tasks = Object.values(state.weeks).reduce((n, w) => n + w.length, 0);
+    $('#storageUsed').textContent = `Right now: ${tasks} task${tasks === 1 ? '' : 's'}, ${state.routines.length} repeating, about ${Math.max(1, Math.round(bytes / 1024))} KB.`;
+    dataModal.showModal();
+  }
+  $('#dataBtn').addEventListener('click', openDataModal);
+
+  $('#exportBtn').addEventListener('click', () => {
+    const payload = JSON.stringify({ app: 'Productive', exportedAt: new Date().toISOString(), data: state }, null, 2);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
+    a.download = `productive-backup-${dateKey(new Date())}.json`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    toast('Backup downloaded');
+  });
+
+  $('#importBtn').addEventListener('click', () => { $('#importFile').value = ''; $('#importFile').click(); });
+  $('#importFile').addEventListener('change', async () => {
+    const file = $('#importFile').files[0];
+    if (!file) return;
+    const fail = (m) => { $('#dataError').textContent = m; };
+    if (file.size > 2 * 1024 * 1024) return fail('That file is too big to be a Productive backup (over 2 MB).');
+    let parsed;
+    try { parsed = JSON.parse(await file.text()); } catch (_) { return fail('That file isn’t a valid backup (couldn’t read it).'); }
+    const raw = parsed && parsed.data && typeof parsed.data === 'object' ? parsed.data : parsed;
+    if (!raw || typeof raw !== 'object' || !raw.weeks || typeof raw.weeks !== 'object' || !Array.isArray(raw.categories)) {
+      return fail('That file isn’t a Productive backup.');
+    }
+    const clean = sanitize(JSON.parse(JSON.stringify(raw)));      // same strict checks as everything else
+    const key = currentWeekKey();
+    Object.keys(clean.weeks).forEach((k) => { if (k < key) delete clean.weeks[k]; });
+    clean.activeWeek = key;
+    delete clean.lastWeek;
+    const count = Object.values(clean.weeks).reduce((n, w) => n + w.length, 0);
+    dataModal.close();
+    state = clean;
+    viewOffset = 0;
+    update(() => { shiftOverdue(); });
+    toast(`Backup restored: ${count} task${count === 1 ? '' : 's'}, ${clean.routines.length} repeating`);
+  });
+
+  let eraseArmed = false, eraseTimer;
+  function resetErase() {
+    eraseArmed = false;
+    clearTimeout(eraseTimer);
+    $('#eraseBtn').classList.remove('armed');
+    $('#eraseBtn').textContent = 'Erase';
+  }
+  $('#eraseBtn').addEventListener('click', () => {
+    if (!eraseArmed) {
+      eraseArmed = true;
+      $('#eraseBtn').classList.add('armed');
+      $('#eraseBtn').textContent = 'Tap again to erase';
+      eraseTimer = setTimeout(resetErase, 5000);
+      return;
+    }
+    resetErase();
+    try { [STORE_KEY, UI_KEY, ERROR_LOG_KEY].forEach((k) => localStorage.removeItem(k)); } catch (_) {}
+    state = freshState();
+    ui = loadUI();
+    viewOffset = 0;
+    dataModal.close();
+    update(() => {});
+    toast('Everything was erased from this browser');
+  });
+  if (location.hash === '#data') openDataModal();
+  if (new URLSearchParams(location.search).get('new') === '1') {
+    history.replaceState(null, '', location.pathname);   // so a reload doesn't reopen it
+    setTimeout(() => openTaskModal(), 300);
+  }
 
   // ---------- Welcome banner (first visit) ----------
   // Shown until the user dismisses it or adds their first task, so the
@@ -1126,6 +1551,14 @@
     $('#bookmarkHint').innerHTML = html;
   })();
 
+  // ---------- Offline support ----------
+  // A small service worker keeps a copy of the app's files so a bookmarked or
+  // home-screen Productive still opens without internet. It always tries the
+  // network first, so updates show up straight away when online.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname))) {
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+  }
+
   // ---------- Boot ----------
   save(); // store the cleaned-up (sanitized) data right away, so tampered data doesn't linger
   checkRollover();
@@ -1133,6 +1566,8 @@
   const movedOnLoad = shiftOverdue();
   render();
   if (movedOnLoad) toast(`${movedOnLoad} unfinished task${movedOnLoad === 1 ? '' : 's'} moved to the next day`);
+  checkReminders();
+  scheduleNextReminder();
   setInterval(tick, 20000);
   // Also fire exactly at Saturday midnight so the reset is instant
   (function scheduleReset() {

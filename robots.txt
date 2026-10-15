@@ -1,0 +1,6 @@
+# Productive: everything here is public and safe to index.
+User-agent: *
+Allow: /
+Disallow: /404.html
+
+Sitemap: https://ms801525.github.io/Productive/sitemap.xml

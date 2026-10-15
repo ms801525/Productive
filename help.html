@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; base-uri 'none'; form-action 'none'" />
   <meta name="referrer" content="no-referrer" />
   <meta name="description" content="How to use Productive: adding tasks, moving them, the weekly reset, overdue tasks, categories and more." />
   <meta name="theme-color" content="#0C0D11" />
@@ -46,6 +46,9 @@
       <a href="#categories">Categories &amp; priority</a>
       <a href="#navigating">Weeks &amp; filters</a>
       <a href="#phone">On your phone</a>
+      <a href="#reminders">Reminders</a>
+      <a href="#repeat">Repeating tasks</a>
+      <a href="#data">Your data</a>
       <a href="#no-account">No account needed</a>
       <a href="#bookmark">Bookmark it</a>
       <a href="#shortcuts">Shortcuts</a>
@@ -163,12 +166,40 @@
       <ul>
         <li><strong>Edit:</strong> click or tap any card to open it. Change anything and press <strong>Save changes</strong>.</li>
         <li><strong>Delete:</strong> open the task and press <strong>Delete</strong>. An <strong>Undo</strong> button appears at the bottom of the screen for a few seconds in case it was a mistake.</li>
+        <li><strong>Move to next week:</strong> open the task and press <strong>Move to next week</strong>. It goes to the same day next week, so it isn't cleared by the weekly reset.</li>
       </ul>
+    </section>
+
+    <!-- Reminders -->
+    <section id="reminders">
+      <h2><span class="num">6</span>Reminders</h2>
+      <p>Want a nudge before something starts? When adding or editing a task with a time, turn on <strong>Remind me</strong>. It's optional and off by default.</p>
+      <ul>
+        <li>You'll get a notification <strong>15 minutes before</strong> the task's time, plus a small pop-up if you're looking at Productive.</li>
+        <li>The first time, your browser asks to allow notifications. If you say no, reminders still pop up inside Productive.</li>
+        <li>Reminders work while Productive is open: a tab, a pinned tab, or the app on your home screen. That's one more reason to <a href="#bookmark">keep it open</a>.</li>
+        <li>Finished tasks never remind you, and each reminder only shows once.</li>
+        <li>On iPhone and iPad, notifications only work after you <a href="#bookmark">add Productive to your Home Screen</a>.</li>
+      </ul>
+    </section>
+
+    <!-- Repeating -->
+    <section id="repeat">
+      <h2><span class="num">7</span>Repeating tasks</h2>
+      <p>Gym every Monday? Team meeting every Friday at 10? Turn on <strong>Repeat every week</strong> in the task window and it comes back <strong>every new week, on the same day and time</strong>, even after the weekly reset.</p>
+      <ul>
+        <li>Repeating tasks show a lime <strong>Weekly</strong> badge on the card.</li>
+        <li><strong>Change it:</strong> edit the task and save. The change applies to this week and every week after.</li>
+        <li><strong>Skip one week:</strong> delete that week's copy. It still comes back the week after.</li>
+        <li><strong>Stop repeating:</strong> open it and turn <strong>Repeat every week</strong> off. This week's task stays, and future copies are removed.</li>
+        <li>If you open the planner after a repeating task's time has already passed (say, after a few days away), that week's copy is simply skipped, so missed routines don't pile up as overdue.</li>
+      </ul>
+      <p>You can have up to 50 repeating tasks.</p>
     </section>
 
     <!-- 6. Reset -->
     <section id="reset">
-      <h2><span class="num">6</span>The weekly reset</h2>
+      <h2><span class="num">8</span>The weekly reset</h2>
       <p>This is the heart of Productive: <strong>no backlog, ever</strong>. Each week runs from Sunday 12:00 AM to Saturday 11:59 PM.</p>
       <div class="table-wrap">
         <table>
@@ -176,6 +207,7 @@
           <tbody>
             <tr><td>The week that just ended</td><td><strong>Deleted permanently</strong>, finished and unfinished tasks alike.</td></tr>
             <tr><td>Tasks you planned for future weeks</td><td><strong>Kept.</strong> Next week becomes "This week".</td></tr>
+            <tr><td>Repeating tasks</td><td><strong>Kept</strong> and added to the new week.</td></tr>
             <tr><td>Your categories and settings</td><td><strong>Kept.</strong></td></tr>
           </tbody>
         </table>
@@ -183,7 +215,9 @@
       <ul>
         <li>The countdown in the top bar (or under the progress bar on phones) shows exactly how long is left.</li>
         <li>You can look ahead to future weeks, but never back at past ones.</li>
-        <li><strong>Tip:</strong> if something must happen next week, use the <strong>→</strong> arrow next to the week dates to go to next week and add it there before Saturday.</li>
+        <li><strong>Saturday heads-up:</strong> on Saturday, a notice tells you how many unfinished tasks will be cleared at midnight, with a one-tap <strong>Move to next week</strong> button.</li>
+        <li><strong>Week in review:</strong> when a new week starts, a short summary shows how last week went (for example "9 of 12 done"). Only the numbers are kept, never the tasks.</li>
+        <li><strong>Planning ahead:</strong> use the <strong>→</strong> arrow next to the week dates to add tasks to next week or later.</li>
       </ul>
       <div class="callout">
         <span class="callout-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg></span>
@@ -193,7 +227,7 @@
 
     <!-- 7. Overdue -->
     <section id="overdue">
-      <h2><span class="num">7</span>Overdue tasks</h2>
+      <h2><span class="num">9</span>Overdue tasks</h2>
       <p>If a task isn't marked <strong>Done</strong> by its time, it moves to the <strong>next day at the same time</strong>. It keeps moving each day until Saturday.</p>
       <ul>
         <li>A task <strong>with a time</strong> is overdue once that time passes.</li>
@@ -216,7 +250,7 @@
 
     <!-- 8. Categories -->
     <section id="categories">
-      <h2><span class="num">8</span>Categories &amp; priority</h2>
+      <h2><span class="num">10</span>Categories &amp; priority</h2>
       <h3>Categories</h3>
       <p>Productive comes with a few starter categories (Work, Gym, Miscellaneous, Appointment, Personal, Study), but you can <strong>make your own</strong> with any name and color.</p>
       <p><strong>From the category row:</strong> tap <strong>+ New category</strong> at the end of the row of category chips above the days (on phones it's the <strong>+ New</strong> chip pinned on the right). Name it, pick a color, and it appears as a new chip you can filter by.</p>
@@ -246,7 +280,7 @@
 
     <!-- 9. Navigating -->
     <section id="navigating">
-      <h2><span class="num">9</span>Weeks, days &amp; filters</h2>
+      <h2><span class="num">11</span>Weeks, days &amp; filters</h2>
       <ul>
         <li><strong>Change week:</strong> use the arrows beside the dates at the top. On larger screens, <strong>Today</strong> brings you back to this week.</li>
         <li><strong>Jump to a day:</strong> tap a day in the strip of dates (Sun–Sat). Today is highlighted in lime.</li>
@@ -258,7 +292,7 @@
 
     <!-- 10. Phone -->
     <section id="phone">
-      <h2><span class="num">10</span>On your phone</h2>
+      <h2><span class="num">12</span>On your phone</h2>
       <ul>
         <li>Add tasks with the lime <strong>+</strong> button in the bottom-right corner.</li>
         <li>Each day's three columns sit side by side. <strong>Swipe left</strong> on a day to see In progress and Done.</li>
@@ -279,7 +313,7 @@
 
     <!-- 11. No account -->
     <section id="no-account">
-      <h2><span class="num">11</span>No account needed</h2>
+      <h2><span class="num">13</span>No account needed</h2>
       <p>There's no sign-up, no password and nothing to set up, on purpose. Productive is built to be as simple as possible: open the page and plan.</p>
       <ul>
         <li><strong>It saves automatically</strong> in your browser, on your device. Reload, close the tab or restart your computer and your week is still there.</li>
@@ -294,7 +328,7 @@
 
     <!-- 12. Bookmark -->
     <section id="bookmark">
-      <h2><span class="num">12</span>Bookmark it or keep it open</h2>
+      <h2><span class="num">14</span>Bookmark it or keep it open</h2>
       <p>The easiest way to use Productive is to keep it one click away.</p>
       <div class="table-wrap">
         <table>
@@ -311,9 +345,22 @@
       <p>Right-click the tab and choose <strong>Pin</strong> (Chrome and Edge) or <strong>Pin Tab</strong> (Firefox and Safari). The planner stays open in a small tab at the left, updates itself live (overdue tasks move, the week resets on its own), and is always there when you need it.</p>
     </section>
 
+    <!-- Data & offline -->
+    <section id="data">
+      <h2><span class="num">15</span>Your data, backups &amp; offline</h2>
+      <p>Tap <a href="index.html#data"><strong>Your data</strong></a> at the bottom of the planner to:</p>
+      <ul>
+        <li><strong>Download a backup</strong> of your tasks, repeating tasks and categories as a file.</li>
+        <li><strong>Restore a backup</strong>, for example to move your planner to a new browser or computer. It replaces the planner in that browser. Finished weeks in the file are skipped.</li>
+        <li><strong>Erase everything</strong> from this browser (tap twice to confirm).</li>
+      </ul>
+      <p><strong>Works offline:</strong> after you've opened Productive once, it opens even with no internet, which is handy from a bookmark or your home screen. Your tasks are always on your device anyway.</p>
+      <p><strong>Print your week:</strong> use your browser's Print (<kbd class="key">Ctrl</kbd>/<kbd class="key">⌘</kbd> + <kbd class="key">P</kbd>) for a clean paper copy.</p>
+    </section>
+
     <!-- 13. Shortcuts -->
     <section id="shortcuts">
-      <h2><span class="num">13</span>Keyboard shortcuts</h2>
+      <h2><span class="num">16</span>Keyboard shortcuts</h2>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Keys</th><th>Action</th></tr></thead>
@@ -331,7 +378,7 @@
 
     <!-- 12. FAQ -->
     <section id="faq" class="faq">
-      <h2><span class="num">14</span>FAQ</h2>
+      <h2><span class="num">17</span>FAQ</h2>
       <details>
         <summary>Where did my tasks go?</summary>
         <div><p>If it's a new week, the previous week was cleared at Saturday midnight. That's the weekly reset, and it's on purpose. If tasks disappeared in the middle of the week, your browser's data may have been cleared (see <a href="#trouble">Troubleshooting</a>
@@ -354,6 +401,26 @@
         <div><p>You picked today with a time that's already gone. Choose a later time, another day, or leave the time empty.</p></div>
       </details>
       <details>
+        <summary>Can Productive remind me about a task?</summary>
+        <div><p>Yes. Turn on <a href="#reminders">Remind me</a> for any task with a time, and you'll get a notification 15 minutes before while Productive is open.</p></div>
+      </details>
+      <details>
+        <summary>Do I have to re-add my gym (or any routine) every week?</summary>
+        <div><p>No. Turn on <a href="#repeat">Repeat every week</a> and it comes back automatically every week.</p></div>
+      </details>
+      <details>
+        <summary>Can I keep an unfinished task for next week?</summary>
+        <div><p>Yes. Open it and press <strong>Move to next week</strong>, or use the Saturday notice to move all unfinished tasks at once.</p></div>
+      </details>
+      <details>
+        <summary>Does it work without internet?</summary>
+        <div><p>Yes, after you've opened it once. See <a href="#data">Your data, backups &amp; offline</a>.</p></div>
+      </details>
+      <details>
+        <summary>Is Productive accessible?</summary>
+        <div><p>It's built to meet WCAG 2.1 AA: all text has strong color contrast, everything works with a keyboard, it respects your device's "reduce motion" setting, and buttons are large enough to tap easily. If something is hard to use, please <a href="contact.html">let me know</a>.</p></div>
+      </details>
+      <details>
         <summary>Why is there no sign-in?</summary>
         <div><p>To keep things simple. No account means nothing to set up, no password to forget, and no personal data stored anywhere but your own device. Open the page and plan.</p></div>
       </details>
@@ -373,12 +440,14 @@
 
     <!-- 13. Troubleshooting -->
     <section id="trouble">
-      <h2><span class="num">15</span>Troubleshooting</h2>
+      <h2><span class="num">18</span>Troubleshooting</h2>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Problem</th><th>Try this</th></tr></thead>
           <tbody>
             <tr><td>Something looks wrong or stuck</td><td>Reload the page. Your tasks are saved.</td></tr>
+            <tr><td>A notice says your browser isn't letting Productive save</td><td>You're probably in a private/incognito window, or site data is blocked for this site. Open Productive in a normal window, or allow site data in your browser's privacy settings.</td></tr>
+            <tr><td>A notice says storage is full</td><td>Open <strong>Your data</strong>, download a backup, then delete tasks you don't need. Clearing other sites' data in your browser also frees space.</td></tr>
             <tr><td>You see an error page</td><td>Press <strong>Try again</strong>. If it keeps happening, press <strong>Report this problem</strong> so it can be fixed.</td></tr>
             <tr><td>Tasks vanish when you close the browser</td><td>You're probably in a private or incognito window, which deletes site data when closed. Use a normal window.</td></tr>
             <tr><td>Tasks vanished mid-week</td><td>Your browser's site data was cleared (by you, a cleanup app, or low storage). Unfortunately they can't be recovered.</td></tr>

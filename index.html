@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; base-uri 'none'; form-action 'none'" />
   <meta name="referrer" content="no-referrer" />
   <meta name="description" content="A smooth weekly task planner — Create, In progress, Done." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -15,6 +15,18 @@
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
   <meta name="theme-color" content="#0C0D11" />
   <title>Productive — Weekly Planner</title>
+  <!-- Link previews (iMessage, Slack, Facebook, X, LinkedIn…). Update the URLs if the site address changes. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Productive" />
+  <meta property="og:title" content="Productive — the weekly planner that starts fresh every Sunday" />
+  <meta property="og:description" content="No sign-up, no setup. Plan your week in three simple columns. Everything resets Saturday at midnight, so there's never a backlog." />
+  <meta property="og:url" content="https://ms801525.github.io/Productive/" />
+  <meta property="og:image" content="https://ms801525.github.io/Productive/icons/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Productive weekly planner: Create, In progress, Done" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://ms801525.github.io/Productive/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -77,6 +89,8 @@
       </div>
       <div class="stats" id="stats"></div>
     </section>
+
+    <div class="notices" id="notices" aria-live="polite"></div>
 
     <aside class="welcome" id="welcome" hidden>
       <span class="welcome-icon" aria-hidden="true">
@@ -143,6 +157,7 @@
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Terms</a>
       <a href="contact.html">Contact</a>
+      <button type="button" class="footer-btn" id="dataBtn">Your data</button>
     </nav>
     <p>© <span id="year">2026</span> Productive</p>
   </footer>
@@ -167,6 +182,11 @@
         <div class="field">
           <span class="label">Day</span>
           <div class="seg seg-days" id="fDays" role="radiogroup"></div>
+          <label class="repeat-row" id="repeatRow">
+            <input type="checkbox" id="fRepeat" />
+            <span class="switch" aria-hidden="true"></span>
+            <span class="repeat-text"><b>Repeat every week</b><small id="repeatHint">Comes back every new week on the same day</small></span>
+          </label>
         </div>
 
         <div class="row-2">
@@ -180,6 +200,12 @@
           </div>
         </div>
         <span class="error" id="timeError"></span>
+
+        <label class="repeat-row" id="remindRow">
+          <input type="checkbox" id="fRemind" />
+          <span class="switch" aria-hidden="true"></span>
+          <span class="repeat-text"><b>Remind me</b><small id="remindHint">Optional · add a time to use it</small></span>
+        </label>
 
         <div class="field">
           <span class="label">Category</span>
@@ -217,6 +243,7 @@
 
       <footer class="modal-foot">
         <button type="button" class="danger-btn" id="deleteBtn" hidden>Delete</button>
+        <button type="button" class="ghost-btn" id="moveNextBtn" hidden title="Move this task to the same day next week">Move to next week</button>
         <span class="spacer"></span>
         <button type="button" class="ghost-btn" data-close>Cancel</button>
         <button type="submit" class="primary-btn" id="saveBtn">Add task</button>
@@ -251,6 +278,38 @@
     <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
   </button>
 
+
+  <!-- Your data: backup, restore, erase -->
+  <dialog id="dataModal" class="modal modal-sm">
+    <div>
+      <header class="modal-head">
+        <h2>Your data</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </header>
+      <div class="modal-body">
+        <p class="hint">Everything is saved in this browser on this device, and nowhere else. <span id="storageUsed"></span></p>
+        <div class="data-row">
+          <div><b>Download a backup</b><span>Saves your tasks, repeating tasks and categories as a file.</span></div>
+          <button type="button" class="ghost-btn" id="exportBtn">Download</button>
+        </div>
+        <div class="data-row">
+          <div><b>Restore a backup</b><span>Replaces this planner with a backup file. Finished weeks in the file are skipped.</span></div>
+          <button type="button" class="ghost-btn" id="importBtn">Choose file</button>
+          <input type="file" id="importFile" accept=".json,application/json" hidden />
+        </div>
+        <div class="data-row danger">
+          <div><b>Erase everything</b><span>Deletes all tasks, repeating tasks, categories and settings from this browser.</span></div>
+          <button type="button" class="danger-btn" id="eraseBtn">Erase</button>
+        </div>
+        <p class="error" id="dataError" role="alert"></p>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Reminder alerts appear here -->
+  <div class="alerts" id="alerts" aria-live="assertive"></div>
 
   <div class="toast" id="toast" role="status" aria-live="polite">
     <span id="toastText"></span>

@@ -30,6 +30,11 @@
     a.href = 'mailto:' + window.PRODUCTIVE_EMAIL;
   });
 
+  // Offline support (see sw.js): network first, so pages are always fresh when online
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost', '127.0.0.1'].indexOf(location.hostname) !== -1)) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+
   var h = document.querySelector('.topbar');
   if (h) document.documentElement.style.setProperty('--topbar-h', h.offsetHeight + 'px');
 

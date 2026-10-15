@@ -29,6 +29,9 @@ A smooth, week-by-week task tracker built with plain HTML, CSS and JavaScript. E
 - [Accessibility & color contrast](#accessibility--color-contrast)
 - [Security](#security)
 - [Why there's no sign-in](#why-theres-no-sign-in)
+- [Reminders](#reminders)
+- [Repeating tasks & the end-of-week flow](#repeating-tasks--the-end-of-week-flow)
+- [Your data, offline & sharing](#your-data-offline--sharing)
 - [Design](#design)
 - [Project structure](#project-structure)
 - [Technical details](#technical-details)
@@ -53,6 +56,12 @@ A smooth, week-by-week task tracker built with plain HTML, CSS and JavaScript. E
 | 🖱️ **Drag & drop** | Drag cards between columns and between days, with a mouse or by press-and-hold on touch screens. |
 | ❓ **How-to guide** | A full [how-to page](help.html) with a quick start, FAQ and troubleshooting. Reachable from the **How to** button in the top bar, the welcome banner, the footer, or the `?` key. |
 | 🛟 **Friendly error page** | Missing pages and unexpected app errors show a clear page that tells people their tasks are safe, with one-tap problem reporting. |
+| 🔔 **Reminders** | Optional *Remind me* switch on any task with a time: one notification 15 minutes before (plus a small in-app pop-up), while Productive is open. Off by default. |
+| 🔁 **Repeat every week** | Turn on *Repeat every week* for routines (gym, meetings) and they come back every new week automatically. Skip a week by deleting that copy. |
+| 🌅 **End-of-week flow** | On Saturday a notice offers to move unfinished tasks to next week. Each task can also be moved on its own. On Sunday a "week in review" card shows last week's score. |
+| 💾 **Your data** | Download a backup, restore it (for example on a new computer), or erase everything, all from the **Your data** link in the footer. |
+| 📴 **Works offline** | After the first visit, a service worker lets the bookmarked or home-screen app open without internet. It always fetches fresh files when online. |
+| 🖨️ **Print-friendly** | Printing gives a clean black-and-white copy of the week. |
 | 🙌 **No account, no setup** | No sign-up or password. Open it and plan. Tasks save in the browser and reset every week. Bookmark it or keep it open in a tab. |
 | ✉️ **Contact form** | A [contact page](contact.html) that opens the visitor's email app (or Gmail / Outlook / Yahoo Mail) with their message addressed and ready to send. No backend or third-party form service. |
 | 🔒 **Privacy & Terms** | Plain-language [Privacy Policy](privacy.html) and [Terms of Use](terms.html) pages. |
@@ -279,6 +288,41 @@ New users can't miss it:
 
 All pages share the app's look (`styles.css` plus `pages.css`), work on phones, and have a sticky top bar with a **Back to planner** button.
 
+## Reminders
+
+Kept deliberately simple:
+- Optional **Remind me** switch in the task window. It's off by default and only available when the task has a time.
+- **15 minutes before** the task's time (`REMIND_MIN` in `app.js`), Productive shows a system notification (through the service worker when available) and a small in-app pop-up if the app is on screen. If notifications aren't allowed, only the in-app pop-up shows.
+- Each reminder fires **once** (`remindedFor` is saved first, so a second tab or a reload won't repeat it). Finished tasks never remind, and a reminder isn't shown if the app is opened after the task's time.
+- Tapping a notification brings Productive to the front (`notificationclick` in `sw.js`).
+- Works while Productive is open (tab, pinned tab, or home-screen app). There's no server, so there are no push notifications when it's closed. On iPhone/iPad, web notifications require the app to be added to the Home Screen.
+- Repeating tasks keep their reminder setting in every week.
+
+## Repeating tasks & the end-of-week flow
+
+**Repeating tasks** (`state.routines`) are templates: title, day, time, category, priority, location, notes.
+- Every week from the current one onward gets one copy on its day (`ensureRoutines()`). Each copy is linked by `routineId` and shows a **Weekly** badge.
+- **Edit** a copy with *Repeat every week* on: the template and untouched future copies are updated.
+- **Delete** a copy: that week is added to the template's `skip` list, so it won't come back that week (Undo restores it).
+- **Turn repeat off:** the template and untouched future copies are removed, and this week's task stays.
+- When filling the current week, copies whose time has already passed are skipped, so routines missed while away don't pile up as overdue.
+- Limit: 50 repeating tasks.
+
+**End of week:**
+- **Move to next week** (task window) moves a task to the same day next week, using its original day if it was auto-shifted. Repeating tasks don't need it.
+- **Saturday notice:** shows how many unfinished tasks will be cleared at midnight, with one tap to move them all to next week. It can be dismissed for the week.
+- **Week in review:** at rollover, a numbers-only summary (`state.lastWeek`: done, total, most-finished category) is kept and shown once on the new week.
+
+## Your data, offline & sharing
+
+- **Your data** (footer link, or open `index.html#data`): download a JSON backup, restore one (max 2 MB, checked with the same strict `sanitize()` as saved data, finished weeks skipped), or erase everything (two taps).
+- **Storage problems** (private windows, blocked or full storage) show one clear notice with a fix, instead of an error on every action. The app keeps working in that tab.
+- **Offline:** `sw.js` caches only the site's own files. It uses a *network-first* strategy, so updates appear immediately when online and the cached copy is used offline. It never touches task data. Bump `CACHE` in `sw.js` if you add files.
+- **Home-screen shortcuts:** long-press the installed app icon for **New task** (`index.html?new=1`) or **How to use**.
+- **Link previews:** Open Graph / Twitter tags plus `icons/og-image.png` (1200×630) make shared links show a title, description and image. They point at `https://ms801525.github.io/Productive/`, so update them if your address is different.
+- **Search engines:** `robots.txt` and `sitemap.xml`. `.nojekyll` tells GitHub Pages to publish files as-is.
+- **Print:** a print stylesheet gives a clean black-and-white copy of the week.
+
 ## Why there's no sign-in
 
 **Productive deliberately has no accounts.** It's built to be as simple as possible:
@@ -393,6 +437,8 @@ Productive/
 ├── pages.css       # Extra styles for the how-to, privacy and terms pages
 ├── pages.js        # Shared script for the how-to, privacy, terms and contact pages
 ├── contact.js      # Contact form logic
+├── sw.js           # Offline support (service worker, network-first)
+├── robots.txt, sitemap.xml, .nojekyll   # Search engines + GitHub Pages
 ├── app.js          # All app logic (weeks, storage, auto-shift, drag & drop, touch drag)
 ├── manifest.webmanifest   # Lets the app be installed to a phone's home screen
 ├── icons/
@@ -421,6 +467,8 @@ Productive/
 | `productive.v1` | Categories, the active week and all tasks, grouped by week |
 | `productive.ui.v1` | UI preferences (active filters, show/hide earlier days, welcome banner dismissed) |
 | `productive.errors.v1` | The last 10 app errors, used only by the error page's report button |
+
+The main data (`productive.v1`) also holds `routines` (repeating tasks) and `lastWeek` (numbers-only summary).
 
 **Data shape**
 ```json
@@ -474,15 +522,14 @@ Works in current versions of **Chrome, Edge, Firefox and Safari** (desktop and m
 
 ## Limitations
 - By design there are no accounts, so data lives in **one browser on one device**, and clearing browser data erases it.
-- Past weeks are deleted by design, so there's no history or statistics across weeks.
-- There are no reminders or notifications.
+- Past weeks are deleted by design. Only last week's numbers are kept, for the review card.
+- Reminders only work while Productive is open (no server means no push notifications when it's closed).
+- Moving data between devices is manual (download a backup, then restore it on the other device).
 
 ## Ideas for future versions
-- Browser notifications before a task's time
-- Recurring tasks (e.g. "Gym every Mon/Wed/Fri")
 - Light theme toggle
-- Weekly summary before the reset (what got done, what carried over)
-- Import a backup file (the error page can already export one)
+- Monday-start weeks as an option
+- Share a week by link (encoded in the URL, still no server)
 
 ---
 
