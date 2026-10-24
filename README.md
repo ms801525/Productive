@@ -6,9 +6,22 @@ A smooth, week-by-week task planner built with plain HTML, CSS and JavaScript. E
 
 ![Productive weekly planner on desktop](docs/screenshot-desktop.png)
 
+**Live:** [productiveplanner.online](https://productiveplanner.online)
+
+## At a glance
+
+| | |
+|---|---|
+| **What** | A weekly task planner that runs entirely in the browser: no account, no server, works offline and installs to a phone's home screen. |
+| **Stack** | Plain HTML, CSS and JavaScript with no frameworks or dependencies. Service worker for offline use, Notifications API for reminders, GitHub Pages hosting with a custom domain. |
+| **Security** | Strict Content Security Policy with outside connections blocked, all user text escaped, every saved or restored record re-validated on load, and limits against flooding. An automated suite of 31 attack checks covers script injection, tampered storage, crafted URLs and framing. See [Security](#security). |
+| **Quality** | Automated Playwright tests, WCAG 2.1 AA color contrast on every page, keyboard navigation, and checks at desktop, iPhone and small Android widths. |
+| **How it was built** | Built with Claude Code as a coding assistant. I set the requirements, reviewed every change, and wrote and ran the tests. |
+
 ---
 
 ## Table of contents
+- [At a glance](#at-a-glance)
 - [Features](#features)
 - [Getting started](#getting-started)
 - [How it works](#how-it-works)
