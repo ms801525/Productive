@@ -1,0 +1,11 @@
+{
+  "name": "productive",
+  "private": true,
+  "description": "Weekly planner that runs in the browser. The app itself has no dependencies; Playwright is only used for the security tests.",
+  "scripts": {
+    "test": "node --test --test-reporter=spec tests/security.test.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}
