@@ -1,5 +1,7 @@
 # productive. — Weekly Planner
 
+[![security tests](https://github.com/ms801525/Productive/actions/workflows/security-tests.yml/badge.svg)](https://github.com/ms801525/Productive/actions/workflows/security-tests.yml)
+
 A smooth, week-by-week task planner built with plain HTML, CSS and JavaScript. Each week starts as a fresh, empty page. You plan what you want to finish that week, move tasks through **Create → In progress → Done**, and at Saturday midnight the week resets for a clean start.
 
 **No account. No setup. Just open it and plan.** Tasks save in your browser, reset every week, and nothing is ever sent to a server.
@@ -14,8 +16,8 @@ A smooth, week-by-week task planner built with plain HTML, CSS and JavaScript. E
 |---|---|
 | **What** | A weekly task planner that runs entirely in the browser: no account, no server, works offline and installs to a phone's home screen. |
 | **Stack** | Plain HTML, CSS and JavaScript with no frameworks or dependencies. Service worker for offline use, Notifications API for reminders, GitHub Pages hosting with a custom domain. |
-| **Security** | Strict Content Security Policy with outside connections blocked, all user text escaped, every saved or restored record re-validated on load, and limits against flooding. An automated suite of 31 attack checks covers script injection, tampered storage, crafted URLs and framing. See [Security](#security). |
-| **Quality** | Automated Playwright tests, WCAG 2.1 AA color contrast on every page, keyboard navigation, and checks at desktop, iPhone and small Android widths. |
+| **Security** | Strict Content Security Policy with outside connections blocked, all user text escaped, every saved or restored record re-validated on load, and limits against flooding. An automated suite of 35 attack tests covers script injection, tampered storage, crafted links and framing, and runs in GitHub Actions on every push. See [Security](#security). |
+| **Quality** | Playwright security tests in CI, WCAG 2.1 AA color contrast on every page, keyboard navigation, and checks at desktop, iPhone and small Android widths. |
 | **How it was built** | Built with Claude Code as a coding assistant. I set the requirements, reviewed every change, and wrote and ran the tests. |
 
 ---
@@ -431,7 +433,13 @@ Productive is a **static website**: no server, no database, no accounts, no shar
 - **Error page and contact form** treat error details and link parameters as plain text.
 
 ### Tested
-An automated attack suite (31 checks) tries script injection through every input, tampered and oversized storage (`__proto__` keys, bad IDs, bad colors, garbage rows), crafted URLs, framing by another site, flooding a week, and loading scripts or sending data to an outside server. All are blocked, and the policy blocks nothing the app needs. The reminder tests also confirm that a task title containing HTML shows as plain text in the notification and pop-up, and that tampered reminder values are removed.
+An automated attack suite of 35 Playwright tests ([`tests/security.test.js`](tests/security.test.js)) tries script injection through every form field, tampered and oversized storage (`__proto__` keys, bad IDs, bad colors, garbage rows, broken JSON), crafted links to the contact and error pages, framing by another site, flooding a week, and loading scripts or sending data to an outside server. All are blocked. GitHub Actions runs the suite on every push.
+
+```bash
+npm install
+npx playwright install chromium
+npm test
+```
 
 ### Keeping it secure (owner checklist)
 1. **Turn on two-factor authentication on your GitHub account.** Whoever controls the repo controls the website, so this matters most.
@@ -481,6 +489,8 @@ Productive/
 ├── robots.txt            # Search engines
 ├── sitemap.xml           # Search engines
 ├── .nojekyll             # Tells GitHub Pages to publish files as-is
+├── package.json          # Test setup only (Playwright); the app has no dependencies
+├── tests/                # Automated security tests (npm test)
 ├── icons/
 │   ├── icon.svg              # Browser tab icon
 │   ├── icon-192.png          # Android home-screen icon
