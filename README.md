@@ -4,6 +4,8 @@
 
 A smooth, week-by-week task planner built with plain HTML, CSS and JavaScript. Each week starts as a fresh, empty page. You plan what you want to finish that week, move tasks through **Create → In progress → Done**, and at Saturday midnight the week resets for a clean start.
 
+Productive is my first application built fully with Claude Code, from the first line to the security tests.
+
 **No account. No setup. Just open it and plan.** Tasks save in your browser, reset every week, and nothing is ever sent to a server.
 
 ![Productive weekly planner on desktop](docs/screenshot-desktop.png)
@@ -18,7 +20,7 @@ A smooth, week-by-week task planner built with plain HTML, CSS and JavaScript. E
 | **Stack** | Plain HTML, CSS and JavaScript with no frameworks or dependencies. Service worker for offline use, Notifications API for reminders, GitHub Pages hosting with a custom domain. |
 | **Security** | Strict Content Security Policy with outside connections blocked, all user text escaped, every saved or restored record re-validated on load, and limits against flooding. An automated suite of 35 attack tests covers script injection, tampered storage, crafted links and framing, and runs in GitHub Actions on every push. See [Security](#security). |
 | **Quality** | Playwright security tests in CI, WCAG 2.1 AA color contrast on every page, keyboard navigation, and checks at desktop, iPhone and small Android widths. |
-| **How it was built** | Built with Claude Code as a coding assistant. I set the requirements, reviewed every change, and wrote and ran the tests. |
+| **How it was built** | My first application built fully with Claude Code. I set the requirements, directed the build and reviewed every change before release, including the 35 automated security tests. |
 
 ---
 
